@@ -1,0 +1,646 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { useTheme } from "next-themes";
+import Editor, { loader } from "@monaco-editor/react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ChevronRight,
+  Code2,
+  Loader2,
+  Play,
+  Send,
+  XCircle,
+  Zap,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { LANGUAGE_LIST, languageById } from "@/lib/judge/languages";
+import { CATEGORIES } from "@/lib/data/categories";
+import { useProgress } from "@/lib/progress";
+import { difficultyColor, difficultyTextColor, formatRuntime, formatValue } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import type {
+  ClassExample,
+  Example,
+  JudgeOutcome,
+  LanguageId,
+  Problem,
+  Submission,
+} from "@/lib/types";
+
+// Serve monaco locally (public/vs) so the editor works fully offline.
+loader.config({ paths: { vs: "/vs" } });
+
+const CODE_KEY = (slug: string) => `algo-arena:code:${slug}`;
+
+interface Props {
+  problem: Problem;
+}
+
+export function ProblemWorkspace({ problem }: Props) {
+  const { resolvedTheme } = useTheme();
+  const { statusOf, recordRun, recordSubmission, submissions } = useProgress();
+  const category = CATEGORIES.find((c) => c.id === problem.category);
+
+  const [lang, setLang] = useState<LanguageId>("python");
+  const [codeByLang, setCodeByLang] = useState<Partial<Record<LanguageId, string>>>({});
+  const [codeHydrated, setCodeHydrated] = useState(false);
+  const [tab, setTab] = useState("description");
+  const [running, setRunning] = useState<"run" | "submit" | null>(null);
+  const [outcome, setOutcome] = useState<JudgeOutcome | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const code = codeByLang[lang] ?? problem.starter[lang];
+
+  // Persist edits per problem + language (never clobber saved code with the empty initial state).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CODE_KEY(problem.slug));
+      if (raw) setCodeByLang(JSON.parse(raw));
+    } catch {
+      // ignore
+    } finally {
+      setCodeHydrated(true);
+    }
+  }, [problem.slug]);
+
+  useEffect(() => {
+    if (!codeHydrated) return;
+    try {
+      localStorage.setItem(CODE_KEY(problem.slug), JSON.stringify(codeByLang));
+    } catch {
+      // ignore
+    }
+  }, [problem.slug, codeByLang, codeHydrated]);
+
+  const setCode = (value: string | undefined) => {
+    if (value === undefined) return;
+    setCodeByLang((prev) => ({ ...prev, [lang]: value }));
+  };
+
+  const resetCode = () => {
+    setCodeByLang((prev) => ({ ...prev, [lang]: problem.starter[lang] }));
+  };
+
+  const judge = async (mode: "run" | "submit") => {
+    if (running) return;
+    setRunning(mode);
+    setApiError(null);
+    try {
+      const res = await fetch("/api/judge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: problem.slug, lang, code, mode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setOutcome(null);
+        setApiError(data.error ?? `Request failed (${res.status})`);
+        return;
+      }
+      setOutcome(data as JudgeOutcome);
+      if (mode === "run") {
+        if (data.status === "Accepted") {
+          recordRun(problem.slug);
+          toast.success("All sample tests passed");
+        } else {
+          toast.error(data.status);
+        }
+      } else {
+        const sub: Submission = {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          slug: problem.slug,
+          language: lang,
+          code,
+          status: data.status,
+          runtimeMs: data.runtimeMs,
+          createdAt: Date.now(),
+          testResults: data.results,
+        };
+        recordSubmission(sub);
+        if (data.status === "Accepted") {
+          toast.success(`Accepted — ${formatRuntime(data.runtimeMs)}`);
+        } else {
+          toast.error(data.status);
+        }
+        setTab("submissions");
+      }
+    } catch {
+      setApiError("Could not reach the judge. Is the dev server running?");
+    } finally {
+      setRunning(null);
+    }
+  };
+
+  const mySubmissions = useMemo(
+    () => submissions.filter((s) => s.slug === problem.slug),
+    [submissions, problem.slug]
+  );
+
+  const status = statusOf(problem.slug);
+  const editorTheme = resolvedTheme === "dark" ? "vs-dark" : "light";
+  const langs = useMemo(
+    () =>
+      problem.availableLangs
+        ? problem.availableLangs.map((id) => languageById(id)).filter((l): l is NonNullable<typeof l> => !!l)
+        : LANGUAGE_LIST,
+    [problem.availableLangs]
+  );
+
+  return (
+    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col">
+      {/* Header */}
+      <div className="border-b bg-card">          <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center gap-2 px-4 py-3">
+          <Link
+            href={problem.isLibrary ? "/library" : "/problems"}
+            className={buttonVariants({ variant: "ghost", size: "sm", className: "-ml-2" })}
+          >
+            <ArrowLeft className="h-4 w-4" /> {problem.isLibrary ? "Library" : "Problems"}
+          </Link>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          {problem.isLibrary ? (
+            <span className="text-sm text-muted-foreground">Archive</span>
+          ) : (
+            <Link
+              href={`/roadmap#${problem.category}`}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category?.color }} />
+              {category?.name}
+            </Link>
+          )}
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <h1 className="font-semibold">{problem.title}</h1>
+          <Badge variant="secondary" className={difficultyColor(problem.difficulty)}>
+            {problem.difficulty}
+          </Badge>
+          {status === "solved" && (
+            <Badge variant="outline" className="gap-1 border-green-500/40 text-green-600 dark:text-green-400">
+              <CheckCircle2 className="h-3 w-3" /> Solved
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <div className="mx-auto grid w-full max-w-[1400px] flex-1 lg:grid-cols-2">
+        {/* Left: description / solutions / submissions */}
+        <div className="flex min-h-0 flex-col border-b lg:border-b-0 lg:border-r">
+          <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
+            <TabsList className="mx-4 mt-3 w-fit">
+              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="solutions">Solutions</TabsTrigger>
+              <TabsTrigger value="submissions">
+                Submissions
+                {mySubmissions.length > 0 && (
+                  <span className="ml-1.5 rounded-full bg-muted px-1.5 text-xs tabular-nums">
+                    {mySubmissions.length}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="description" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+              <DescriptionTab problem={problem} />
+            </TabsContent>
+            <TabsContent value="solutions" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+              <SolutionsTab problem={problem} theme={resolvedTheme === "dark" ? "dark" : "light"} />
+            </TabsContent>
+            <TabsContent value="submissions" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+              <SubmissionsTab submissions={mySubmissions} />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Right: editor + console */}
+        <div className="flex min-h-0 flex-col">
+          <div className="flex items-center gap-2 border-b bg-card px-4 py-2">
+            <Select value={lang} onValueChange={(v) => setLang((v ?? "python") as LanguageId)}>
+              <SelectTrigger className="h-8 w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {langs.map((l) => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="ghost" size="sm" className="ml-auto h-8" onClick={resetCode}>
+              Reset
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8"
+              disabled={running !== null}
+              onClick={() => judge("run")}
+            >
+              {running === "run" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Play className="h-3.5 w-3.5" />
+              )}
+              Run
+            </Button>
+            <Button
+              size="sm"
+              className="h-8"
+              disabled={running !== null}
+              onClick={() => judge("submit")}
+            >
+              {running === "submit" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Send className="h-3.5 w-3.5" />
+              )}
+              Submit
+            </Button>
+          </div>
+
+          <div className="min-h-[320px] flex-1 overflow-hidden">
+            <Editor
+              height="100%"
+              language={languageById(lang)?.monaco}
+              value={code}
+              onChange={setCode}
+              theme={editorTheme}
+              options={{
+                fontSize: 13,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                wordWrap: "on",
+                tabSize: 4,
+                automaticLayout: true,
+                padding: { top: 12 },
+                fontFamily: "var(--font-geist-mono), monospace",
+              }}
+            />
+          </div>
+
+          <ConsolePanel
+            running={running}
+            outcome={outcome}
+            apiError={apiError}
+            visibleCount={problem.visibleTests.length}
+            totalCount={problem.visibleTests.length + problem.hiddenTests.length}
+          />
+        </div>
+      </div>
+    </main>
+  );
+}
+
+/* ------------------------------ Description ------------------------------ */
+
+function DescriptionTab({ problem }: { problem: Problem }) {
+  return (
+    <div className="max-w-none space-y-6">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{problem.description}</ReactMarkdown>
+      </div>
+
+      <div className="space-y-4">
+        {problem.examples.map((ex, i) => (
+          <ExampleCard key={i} example={ex} index={i} />
+        ))}
+      </div>
+
+      <div>
+        <h3 className="text-base font-semibold">Constraints</h3>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          {problem.constraints.map((c, i) => (
+            <li key={i}>
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
+                {c}
+              </code>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {problem.topics.map((t) => (
+          <Badge key={t} variant="secondary">
+            {t}
+          </Badge>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ExampleCard({ example, index }: { example: Example | ClassExample; index: number }) {
+  const isClass = "ops" in example;
+  return (
+    <div className="rounded-lg border bg-muted/30 p-4">
+      <div className="font-mono text-sm font-semibold">Example {index + 1}</div>
+      {isClass ? (
+        <div className="mt-2 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left font-mono text-xs text-muted-foreground">
+                <th className="pr-3 pb-1">Operation</th>
+                <th className="pr-3 pb-1">Input</th>
+                <th className="pb-1">Return</th>
+              </tr>
+            </thead>
+            <tbody className="font-mono">
+              {example.ops.map((op, j) => (
+                <tr key={j} className="align-top">
+                  <td className="pr-3 py-0.5">{op}</td>
+                  <td className="pr-3 py-0.5 text-muted-foreground">
+                    {formatValue(example.args[j])}
+                  </td>
+                  <td className="py-0.5 text-muted-foreground">
+                    {formatValue(example.output[j])}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="mt-2 space-y-1 font-mono text-sm">
+          <div>
+            <span className="text-muted-foreground">Input: </span>
+            {example.args.map((a, j) => (
+              <span key={j}>
+                {j > 0 && <span className="text-muted-foreground">, </span>}
+                {formatValue(a)}
+              </span>
+            ))}
+          </div>
+          <div>
+            <span className="text-muted-foreground">Output: </span>
+            <span>{formatValue(example.output)}</span>
+          </div>
+        </div>
+      )}
+      {example.explain && (
+        <p className="mt-2 text-sm text-muted-foreground">{example.explain}</p>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------- Solutions ------------------------------- */
+
+function SolutionsTab({ problem, theme }: { problem: Problem; theme: "dark" | "light" }) {
+  const available = LANGUAGE_LIST.filter((l) => problem.editorial.code[l.id]);
+  const [solLang, setSolLang] = useState<LanguageId | null>(null);
+  const effectiveLang = solLang && problem.editorial.code[solLang] ? solLang : (available[0]?.id ?? "python");
+  const code = problem.editorial.code[effectiveLang];
+  const style = theme === "dark" ? oneDark : oneLight;
+
+  return (
+    <div className="max-w-none space-y-6">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{problem.editorial.approach}</ReactMarkdown>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <div className="rounded-lg border px-3 py-2">
+          <div className="text-xs text-muted-foreground">Time complexity</div>
+          <div className="font-mono text-sm font-medium">{problem.editorial.complexity.time}</div>
+        </div>
+        <div className="rounded-lg border px-3 py-2">
+          <div className="text-xs text-muted-foreground">Space complexity</div>
+          <div className="font-mono text-sm font-medium">{problem.editorial.complexity.space}</div>
+        </div>
+      </div>
+
+      {code !== undefined && (
+        <div className="overflow-hidden rounded-lg border">
+          <div className="flex items-center justify-between border-b bg-muted/40 px-3 py-2">
+            <div className="flex items-center gap-1">
+              {available.map((l) => (
+                <Button
+                  key={l.id}
+                  variant={effectiveLang === l.id ? "secondary" : "ghost"}
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setSolLang(l.id)}
+                >
+                  {l.label}
+                </Button>
+              ))}
+            </div>
+            <Code2 className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <SyntaxHighlighter
+            language={monacoLangFor(effectiveLang)}
+            style={style}
+            customStyle={{ margin: 0, fontSize: 13, borderRadius: 0 }}
+            wrapLongLines
+          >
+            {code}
+          </SyntaxHighlighter>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function monacoLangFor(lang: LanguageId): string {
+  switch (lang) {
+    case "python":
+      return "python";
+    case "javascript":
+      return "javascript";
+    case "typescript":
+      return "typescript";
+    case "java":
+      return "java";
+    case "cpp":
+      return "cpp";
+  }
+}
+
+/* ------------------------------ Submissions ------------------------------ */
+
+const STATUS_STYLES: Record<Submission["status"], string> = {
+  Accepted: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
+  "Wrong Answer": "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+  "Runtime Error": "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+  "Time Limit Exceeded": "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
+  "Compile Error": "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
+};
+
+function SubmissionsTab({ submissions }: { submissions: Submission[] }) {
+  if (submissions.length === 0) {
+    return (
+      <div className="py-12 text-center text-sm text-muted-foreground">
+        No submissions yet. Write a solution and hit <span className="font-medium">Submit</span>.
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2">
+      {submissions.map((s) => (
+        <div
+          key={s.id}
+          className="flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm"
+        >
+          <Badge variant="secondary" className={STATUS_STYLES[s.status]}>
+            {s.status}
+          </Badge>
+          <span className="text-muted-foreground">{languageById(s.language)?.label}</span>
+          {s.status === "Accepted" && (
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Zap className="h-3.5 w-3.5" />
+              {formatRuntime(s.runtimeMs)}
+            </span>
+          )}
+          <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+            {new Date(s.createdAt).toLocaleString()}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* -------------------------------- Console -------------------------------- */
+
+function ConsolePanel({
+  running,
+  outcome,
+  apiError,
+  visibleCount,
+  totalCount,
+}: {
+  running: "run" | "submit" | null;
+  outcome: JudgeOutcome | null;
+  apiError: string | null;
+  visibleCount: number;
+  totalCount: number;
+}) {
+  return (
+    <div className="flex h-56 flex-col border-t bg-card">
+      <div className="flex items-center gap-2 border-b px-4 py-2">
+        <span className="text-sm font-medium">Console</span>
+        {running && (
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Running {running === "submit" ? `${totalCount} tests` : `${visibleCount} tests`}…
+          </span>
+        )}
+        {outcome && !running && <OutcomeBadge outcome={outcome} />}
+      </div>
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        {apiError && (
+          <div className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">
+            <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span className="font-mono whitespace-pre-wrap">{apiError}</span>
+          </div>
+        )}
+        {!apiError && running && (
+          <p className="text-sm text-muted-foreground">Compiling and running your code…</p>
+        )}
+        {!apiError && !running && !outcome && (
+          <p className="text-sm text-muted-foreground">
+            Press <span className="font-medium">Run</span> to test against sample cases, or{" "}
+            <span className="font-medium">Submit</span> to run against all tests.
+          </p>
+        )}
+        {!apiError && !running && outcome && <OutcomeDetails outcome={outcome} />}
+      </div>
+    </div>
+  );
+}
+
+function OutcomeBadge({ outcome }: { outcome: JudgeOutcome }) {
+  const ok = outcome.status === "Accepted";
+  const cls = ok
+    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+    : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400";
+  return (
+    <span className="flex items-center gap-2 text-xs">
+      <Badge variant="secondary" className={cls}>
+        {ok ? <CheckCircle2 className="mr-1 h-3 w-3" /> : <XCircle className="mr-1 h-3 w-3" />}
+        {outcome.status}
+      </Badge>
+      <span className="text-muted-foreground">{formatRuntime(outcome.runtimeMs)}</span>
+      {outcome.compileMs > 0 && (
+        <span className="text-muted-foreground">compile {formatRuntime(outcome.compileMs)}</span>
+      )}
+    </span>
+  );
+}
+
+function OutcomeDetails({ outcome }: { outcome: JudgeOutcome }) {
+  if (outcome.status === "Accepted") {
+    const count = outcome.results.length;
+    return (
+      <div className="space-y-2">
+        <p className="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
+          <CheckCircle2 className="h-4 w-4" />
+          All {count} test{count === 1 ? "" : "s"} passed!
+        </p>
+        {outcome.userStdout && <StdoutBlock stdout={outcome.userStdout} />}
+      </div>
+    );
+  }
+
+  const failed = outcome.results.filter((r) => !r.passed);
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-muted-foreground">
+        {failed.length} of {outcome.results.length} test{outcome.results.length === 1 ? "" : "s"} failed:
+      </p>
+      {failed.map((r) => (
+        <div key={r.index} className="rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-sm">
+          <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
+            <XCircle className="h-3.5 w-3.5 text-red-500" />
+            Test #{r.index + 1}
+            {r.timedOut && <Badge variant="secondary">Time limit exceeded</Badge>}
+          </div>
+          {r.error ? (
+            <pre className="mt-1 max-h-40 overflow-auto font-mono text-xs whitespace-pre-wrap text-red-600 dark:text-red-400">
+              {r.error}
+            </pre>
+          ) : (
+            <div className="mt-1 space-y-0.5 font-mono text-xs">
+              <div>
+                <span className="text-muted-foreground">Output: </span>
+                <span>{formatValue(r.output)}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Expected: </span>
+                <span>{formatValue(r.expected)}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+      {outcome.userStdout && <StdoutBlock stdout={outcome.userStdout} />}
+    </div>
+  );
+}
+
+function StdoutBlock({ stdout }: { stdout: string }) {
+  return (
+    <div>
+      <div className="text-xs font-medium text-muted-foreground">Your stdout</div>
+      <pre className="mt-1 max-h-32 overflow-auto rounded-lg bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap">
+        {stdout}
+      </pre>
+    </div>
+  );
+}

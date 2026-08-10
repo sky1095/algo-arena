@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Code2,
   Loader2,
+  LockKeyhole,
   Play,
   Send,
   WandSparkles,
@@ -69,6 +70,7 @@ export function ProblemWorkspace({ problem }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
   const [formatting, setFormatting] = useState(false);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const actionsRef = useRef<{ judge: (mode: "run" | "submit") => Promise<void>; format: () => Promise<void> } | null>(null);
 
   const code = codeByLang[lang] ?? problem.starter[lang];
 
@@ -151,8 +153,9 @@ export function ProblemWorkspace({ problem }: Props) {
       }
       setOutcome(data as JudgeOutcome);
       if (mode === "run") {
+        // Any completed run counts as an attempt (unlocks the editorial).
+        recordRun(problem.slug);
         if (data.status === "Accepted") {
-          recordRun(problem.slug);
           toast.success("All sample tests passed");
         } else {
           toast.error(data.status);
@@ -183,12 +186,20 @@ export function ProblemWorkspace({ problem }: Props) {
     }
   };
 
+  // Keep the keyboard-shortcut handlers pointed at the latest render's closures
+  // (lang/code/running change per render, but the editor mounts only once).
+  useEffect(() => {
+    actionsRef.current = { judge, format: formatCodeInEditor };
+  });
+
   const mySubmissions = useMemo(
     () => submissions.filter((s) => s.slug === problem.slug),
     [submissions, problem.slug]
   );
 
   const status = statusOf(problem.slug);
+  // Keep the editorial hidden until the student has actually attempted the problem.
+  const solutionsLocked = status === null;
   const editorTheme = resolvedTheme === "dark" ? "vs-dark" : "light";
   const langs = useMemo(
     () =>
@@ -239,7 +250,10 @@ export function ProblemWorkspace({ problem }: Props) {
           <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
             <TabsList className="mx-4 mt-3 w-fit">
               <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="solutions">Solutions</TabsTrigger>
+              <TabsTrigger value="solutions">
+                Solutions
+                {solutionsLocked && <LockKeyhole className="ml-1.5 h-3 w-3 text-muted-foreground" />}
+              </TabsTrigger>
               <TabsTrigger value="submissions">
                 Submissions
                 {mySubmissions.length > 0 && (
@@ -253,7 +267,11 @@ export function ProblemWorkspace({ problem }: Props) {
               <DescriptionTab problem={problem} />
             </TabsContent>
             <TabsContent value="solutions" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-              <SolutionsTab problem={problem} theme={resolvedTheme === "dark" ? "dark" : "light"} />
+              {solutionsLocked ? (
+                <SolutionsLocked onBack={() => setTab("description")} />
+              ) : (
+                <SolutionsTab problem={problem} theme={resolvedTheme === "dark" ? "dark" : "light"} />
+              )}
             </TabsContent>
             <TabsContent value="submissions" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
               <SubmissionsTab submissions={mySubmissions} />
@@ -285,7 +303,7 @@ export function ProblemWorkspace({ problem }: Props) {
               className="h-8"
               disabled={formatting || running !== null}
               onClick={formatCodeInEditor}
-              title={`Format ${languageById(lang)?.label ?? "code"}`}
+              title={`Format ${languageById(lang)?.label ?? "code"} (Shift+Alt+F)`}
             >
               {formatting ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -300,6 +318,7 @@ export function ProblemWorkspace({ problem }: Props) {
               className="h-8"
               disabled={running !== null}
               onClick={() => judge("run")}
+              title="Run (Ctrl/Cmd+Enter)"
             >
               {running === "run" ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -323,14 +342,24 @@ export function ProblemWorkspace({ problem }: Props) {
             </Button>
           </div>
 
-          <div className="min-h-[320px] flex-1 overflow-hidden">
+          <div className="min-h-[320px] flex-1">
             <Editor
               height="100%"
               language={languageById(lang)?.monaco}
               value={code}
               onChange={setCode}
-              onMount={(editor) => {
+              onMount={(editor, monaco) => {
                 editorRef.current = editor;
+                // Run: Ctrl/Cmd+Enter · Format: Shift+Alt+F (dynamic bindings win over Monaco defaults).
+                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                  void actionsRef.current?.judge("run");
+                });
+                editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.Enter, () => {
+                  void actionsRef.current?.judge("run");
+                });
+                editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
+                  void actionsRef.current?.format();
+                });
               }}
               theme={editorTheme}
               options={{
@@ -453,6 +482,26 @@ function ExampleCard({ example, index }: { example: Example | ClassExample; inde
 }
 
 /* ------------------------------- Solutions ------------------------------- */
+
+function SolutionsLocked({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+        <LockKeyhole className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <div>
+        <h3 className="text-base font-semibold">Solutions are locked</h3>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+          Give it a shot first — press <span className="font-medium">Run</span> or{" "}
+          <span className="font-medium">Submit</span> to unlock the approach and reference solution.
+        </p>
+      </div>
+      <Button variant="outline" size="sm" onClick={onBack}>
+        Back to description
+      </Button>
+    </div>
+  );
+}
 
 function SolutionsTab({ problem, theme }: { problem: Problem; theme: "dark" | "light" }) {
   const available = LANGUAGE_LIST.filter((l) => problem.editorial.code[l.id]);

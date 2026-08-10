@@ -11,7 +11,7 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
 - **Progress tracking** (solved/attempted, submissions history, streak) stored in `localStorage`
 - **Dark / light mode**, shadcn UI components, fully responsive
 
-![Homepage with stats, daily problem, and category overview](public/screenshots/home.png)
+![Homepage with stats, daily problem, and category overview](public/screenshots/home.png?v=2)
 
 ## Getting started
 
@@ -36,7 +36,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/problems/[slug]` | Workspace: description, editor, console, Solutions & Submissions tabs |
 | `/profile` | Stats page: difficulty breakdown, streak, category progress |
 
-![Searchable problem list](public/screenshots/problems.png) ![2,786-problem library archive](public/screenshots/library.png) ![Category roadmap with progress](public/screenshots/roadmap.png)
+![Searchable problem list](public/screenshots/problems.png?v=2) ![2,786-problem library archive](public/screenshots/library.png?v=2) ![Category roadmap with progress](public/screenshots/roadmap.png?v=2)
 
 ## Architecture
 
@@ -58,7 +58,7 @@ src/
 
 `/api/judge` takes `{ slug, lang, code, mode }`. The harness generates a `Main` program per language that constructs each test case from literals, calls your `Solution`/function, serializes results as `@@RESULT` / `@@ERROR` markers, and runs it in a sandboxed subprocess (time/memory limits). The judge parses those markers, compares outputs (with special handling for trees, graphs, linked lists, multi-answer any-order, and in-place `void` mutations), and returns a per-test verdict.
 
-![Problem workspace: description, editor, console](public/screenshots/workspace.png)
+![Problem workspace: description, editor, console](public/screenshots/workspace.png?v=2)
 
 ## Data model
 

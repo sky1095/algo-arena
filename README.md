@@ -1,4 +1,4 @@
-# FreeCodePractice — Coding Interview Practice
+# Algo Arena — Coding Interview Practice
 
 A coding interview practice platform: a curated roadmap of classic algorithm problems with a real judge that runs your code.
 

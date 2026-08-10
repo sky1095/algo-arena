@@ -76,7 +76,7 @@ export function Navbar() {
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Code2 className="h-4 w-4" />
           </span>
-          <span className="hidden sm:inline">FreeCodePractice</span>
+          <span className="hidden sm:inline">Algo Arena</span>
         </Link>
 
         <nav className="ml-4 flex items-center gap-1">

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FreeCodePractice — Coding Interview Practice",
+  title: "Algo Arena — Coding Interview Practice",
   description:
     "A curated roadmap of classic algorithm problems with a built-in judge supporting Python, JavaScript, TypeScript, Java and C++.",
 };

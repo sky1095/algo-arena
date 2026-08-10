@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import Editor, { loader } from "@monaco-editor/react";
+import Editor, { loader, type OnMount } from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -16,6 +16,7 @@ import {
   Loader2,
   Play,
   Send,
+  WandSparkles,
   XCircle,
   Zap,
 } from "lucide-react";
@@ -31,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LANGUAGE_LIST, languageById } from "@/lib/judge/languages";
+import { formatCode } from "@/lib/format-code";
 import { CATEGORIES } from "@/lib/data/categories";
 import { useProgress } from "@/lib/progress";
 import { difficultyColor, difficultyTextColor, formatRuntime, formatValue } from "@/lib/format";
@@ -65,6 +67,8 @@ export function ProblemWorkspace({ problem }: Props) {
   const [running, setRunning] = useState<"run" | "submit" | null>(null);
   const [outcome, setOutcome] = useState<JudgeOutcome | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [formatting, setFormatting] = useState(false);
+  const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
 
   const code = codeByLang[lang] ?? problem.starter[lang];
 
@@ -96,6 +100,37 @@ export function ProblemWorkspace({ problem }: Props) {
 
   const resetCode = () => {
     setCodeByLang((prev) => ({ ...prev, [lang]: problem.starter[lang] }));
+  };
+
+  const formatCodeInEditor = async () => {
+    const editor = editorRef.current;
+    if (!editor || formatting || running) return;
+    const model = editor.getModel();
+    if (!model) return;
+    const current = model.getValue();
+    if (!current.trim()) return;
+
+    setFormatting(true);
+    try {
+      if (lang === "javascript" || lang === "typescript") {
+        // Monaco ships a built-in JS/TS formatter — run it directly so undo works.
+        const action = editor.getAction("editor.action.formatDocument");
+        if (action) {
+          await action.run();
+          toast.success("Code formatted");
+          return;
+        }
+      }
+      const formatted = await formatCode(lang, current);
+      if (formatted !== current) {
+        editor.executeEdits("format", [{ range: model.getFullModelRange(), text: formatted }]);
+      }
+      toast.success("Code formatted");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not format code");
+    } finally {
+      setFormatting(false);
+    }
   };
 
   const judge = async (mode: "run" | "submit") => {
@@ -245,6 +280,21 @@ export function ProblemWorkspace({ problem }: Props) {
               Reset
             </Button>
             <Button
+              variant="ghost"
+              size="sm"
+              className="h-8"
+              disabled={formatting || running !== null}
+              onClick={formatCodeInEditor}
+              title={`Format ${languageById(lang)?.label ?? "code"}`}
+            >
+              {formatting ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <WandSparkles className="h-3.5 w-3.5" />
+              )}
+              Format
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               className="h-8"
@@ -279,6 +329,9 @@ export function ProblemWorkspace({ problem }: Props) {
               language={languageById(lang)?.monaco}
               value={code}
               onChange={setCode}
+              onMount={(editor) => {
+                editorRef.current = editor;
+              }}
               theme={editorTheme}
               options={{
                 fontSize: 13,

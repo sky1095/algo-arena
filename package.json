@@ -12,6 +12,8 @@
     "@base-ui/react": "^1.7.0",
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/typography": "^0.5.20",
+    "@wasm-fmt/clang-format": "^22.1.8",
+    "@wasm-fmt/ruff_fmt": "^0.15.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

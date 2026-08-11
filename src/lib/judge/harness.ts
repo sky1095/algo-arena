@@ -1,4 +1,5 @@
 import type { ClassSpec, InputType, LanguageId, TestCase } from "@/lib/types";
+import type { RunLimits } from "@/lib/judge/platform";
 
 export interface HarnessFile {
   name: string;
@@ -7,9 +8,14 @@ export interface HarnessFile {
 
 export interface BuiltSubmission {
   files: HarnessFile[];
+  /** Plain argv (no shell wrapper) for the compile phase, if any. */
   compile?: string[];
+  /** Plain argv (no shell wrapper) for the run phase. `./main`-style local
+   *  binaries are resolved per platform by the runner. */
   run: string[];
   stdin?: string;
+  /** Resource caps for the run phase (applied via ulimit on Unix). */
+  limits?: RunLimits;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1230,7 +1236,8 @@ export function buildSubmission(
       const payload = JSON.stringify({ method: methodName, cases, argTypes, void: outputType === "void" });
       return {
         files: [{ name: "main.py", content: PY_PRELUDE + userCode + PY_HARNESS }],
-        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec python3 -I -B main.py`],
+        run: ["python3", "-I", "-B", "main.py"],
+        limits: { memoryKb: 524288, cpuSec: 8 },
         stdin: payload,
       };
     }
@@ -1240,11 +1247,8 @@ export function buildSubmission(
       const ext = lang === "typescript" ? "ts" : "js";
       return {
         files: [{ name: `main.${ext}`, content: JS_PRELUDE + userCode + JS_HARNESS }],
-        run: [
-          "bash",
-          "-c",
-          `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec deno run --no-config --no-check --quiet main.${ext}`,
-        ],
+        run: ["deno", "run", "--no-config", "--no-check", "--quiet", `main.${ext}`],
+        limits: { memoryKb: 524288, cpuSec: 8 },
         stdin: payload,
       };
     }
@@ -1276,7 +1280,8 @@ export function buildSubmission(
           { name: "Solution.java", content: "import java.util.*;\n\n" + userCode },
         ],
         compile: ["javac", "-encoding", "UTF-8", "-d", "out", "Main.java", "Solution.java"],
-        run: ["bash", "-c", `ulimit -t 10; exec java -Xmx384m -Xss64m -cp out Main`],
+        run: ["java", "-Xmx384m", "-Xss64m", "-cp", "out", "Main"],
+        limits: { cpuSec: 10 },
       };
     }
     case "cpp": {
@@ -1306,7 +1311,8 @@ export function buildSubmission(
           { name: "main.cpp", content: CPP_PRELUDE + userCode + "\n" + CPP_MAIN_START + mainBody + CPP_MAIN_END },
         ],
         compile: ["g++", "-std=c++17", "-O2", "-o", "main", "main.cpp"],
-        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec ./main`],
+        run: ["./main"],
+        limits: { memoryKb: 524288, cpuSec: 8 },
       };
     }
   }
@@ -1329,7 +1335,8 @@ function buildClassSubmission(
       const payload = JSON.stringify({ className: spec.className, ops, cases });
       return {
         files: [{ name: "main.py", content: PY_PRELUDE + userCode + PY_CLASS_HARNESS }],
-        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec python3 -I -B main.py`],
+        run: ["python3", "-I", "-B", "main.py"],
+        limits: { memoryKb: 524288, cpuSec: 8 },
         stdin: payload,
       };
     }
@@ -1339,11 +1346,8 @@ function buildClassSubmission(
       const ext = lang === "typescript" ? "ts" : "js";
       return {
         files: [{ name: `main.${ext}`, content: JS_PRELUDE + userCode + JS_CLASS_HARNESS }],
-        run: [
-          "bash",
-          "-c",
-          `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec deno run --no-config --no-check --quiet main.${ext}`,
-        ],
+        run: ["deno", "run", "--no-config", "--no-check", "--quiet", `main.${ext}`],
+        limits: { memoryKb: 524288, cpuSec: 8 },
         stdin: payload,
       };
     }
@@ -1380,7 +1384,8 @@ function buildClassSubmission(
           { name: "Solution.java", content: "import java.util.*;\n\n" + userCode },
         ],
         compile: ["javac", "-encoding", "UTF-8", "-d", "out", "Main.java", "Solution.java"],
-        run: ["bash", "-c", `ulimit -t 10; exec java -Xmx384m -Xss64m -cp out Main`],
+        run: ["java", "-Xmx384m", "-Xss64m", "-cp", "out", "Main"],
+        limits: { cpuSec: 10 },
       };
     }
     case "cpp": {
@@ -1420,7 +1425,8 @@ function buildClassSubmission(
           { name: "main.cpp", content: CPP_PRELUDE + userCode + "\n" + CPP_MAIN_START_CLASS + mainBody + CPP_MAIN_END },
         ],
         compile: ["g++", "-std=c++17", "-O2", "-o", "main", "main.cpp"],
-        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec ./main`],
+        run: ["./main"],
+        limits: { memoryKb: 524288, cpuSec: 8 },
       };
     }
   }

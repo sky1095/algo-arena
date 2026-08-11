@@ -29,6 +29,11 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
    | Java | `javac` + `java` (a JDK) |
    | C++ | `g++` |
 
+   On **Windows**, Python accepts `python3`, `py`, or `python`, and C++ needs
+   a MinGW `g++` on PATH. If a runtime is missing natively, the judge falls
+   back to running submissions inside **WSL2** (default distro), so a Windows
+   machine with WSL2 and the runtimes installed there works too.
+
    Missing runtimes don't stop the app — that language's submissions just
    report a compile error in the workspace console.
 
@@ -39,18 +44,27 @@ every judge runtime, so all 5 languages work out of the box:
 docker compose up -d --build
 ```
 
-**Run from a clone:**
+**Run from a clone (one command does it all):**
 
 ```bash
 git clone <repo-url>
 cd algo-arena
-npm install
-npm run dev
+npm run setup
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The server prints a banner
-at startup listing which judge languages are ready, so you can see at a glance
-what's installed and what isn't.
+`npm run setup` checks your Node version, installs dependencies, starts the dev
+server, prints which judge languages are ready, and opens your browser.
+Alternatives:
+
+```bash
+npm run setup:prod      # build once, then serve (production mode)
+npm run setup:docker    # Docker image — every judge runtime included
+```
+
+Or do it by hand: `npm install && npm run dev`, then open
+[http://localhost:3000](http://localhost:3000). Either way, the server prints a
+banner at startup listing which judge languages are ready, so you can see at a
+glance what's installed and what isn't.
 
 ## Self-hosting / deployment
 
@@ -142,13 +156,12 @@ Each problem defines visible + hidden tests, per-language starter code and edito
 This project is **free and open for anyone to practice on** — no account, no sign-up, no paywall. Clone it, run it locally, and start grinding — you'll need **Node ≥ 24**
 (`node -v`) and the language runtimes the judge compiles with (`python3`, `deno`
 for JS/TS, `javac`/`java`, `g++`). Or skip all of that with
-`docker compose up -d --build`, which ships everything:
+`npm run setup:docker`, which ships everything:
 
 ```bash
 git clone <repo-url>
 cd algo-arena
-npm install
-npm run dev
+npm run setup
 ```
 
 - **2,936 problems** to practice with: a curated 150-problem interview roadmap plus a 2,786-problem archive

@@ -1,63 +1,16 @@
-import { accessSync, constants } from "node:fs";
-import path from "node:path";
+import { findOnPath, findPythonBin, isWin32 } from "./platform.ts";
 
 /**
- * Detects which judge runtimes are available to the server process, so a
- * startup banner can tell the operator at a glance which submission languages
- * will work. Server-side only (uses `node:fs`).
+ * Detects which judge toolchains are available, so a startup banner can tell
+ * the operator at a glance which submission languages will work. Server-side
+ * only (uses `node:fs` via the platform module).
  *
- * Mirrors the PATH logic in `./runner.ts`: a server started from an IDE,
- * launchd, systemd or cron can have a PATH that omits the judge runtimes, so
- * standard locations are appended as a fallback. The server's own PATH entries
- * always win (they come first).
- *
- * The fallbacks are Unix-only by design: the judge itself shells out through
- * `bash -c` with ulimits (see `./harness.ts`), so submissions are already
- * Unix-only. On Windows, runtime installers (Python, Deno, JDK, MinGW) add
- * themselves to PATH and there is no stable fallback directory to append, so
- * we scan the inherited PATH only.
+ * PATH resolution (including the standard Unix fallback locations for
+ * servers started from IDEs/launchd/systemd/cron) lives in `./platform.ts`,
+ * which the runner also uses — so this report matches what the judge sees.
  */
-const EXTRA_PATH_ENTRIES =
-  process.platform === "win32"
-    ? []
-    : [
-        "/usr/local/bin",
-        "/opt/homebrew/bin",
-        "/opt/homebrew/sbin",
-        "/usr/bin",
-        "/bin",
-        "/usr/sbin",
-        "/sbin",
-      ];
-
-/** PATH entries the judge would actually use, in priority order. */
-function judgePathEntries(): string[] {
-  const env = (process.env.PATH ?? "").split(path.delimiter).filter(Boolean);
-  for (const entry of EXTRA_PATH_ENTRIES) {
-    if (!env.includes(entry)) env.push(entry);
-  }
-  return env;
-}
-
-/** First executable match for `bin` on the judge PATH, or undefined. */
-export function findOnPath(bin: string): string | undefined {
-  const exts = process.platform === "win32" ? ["", ".exe", ".cmd", ".bat"] : [""];
-  for (const dir of judgePathEntries()) {
-    for (const ext of exts) {
-      const p = path.join(dir, bin + ext);
-      try {
-        accessSync(p, constants.X_OK);
-        return p;
-      } catch {
-        // keep looking
-      }
-    }
-  }
-  return undefined;
-}
-
 export interface JudgeRuntimes {
-  /** python3 — Python submissions. */
+  /** python3 (or py/python on Windows). */
   python?: string;
   /** deno — JavaScript/TypeScript submissions (Node is NOT used). */
   deno?: string;
@@ -65,14 +18,19 @@ export interface JudgeRuntimes {
   javac?: string;
   /** g++ — C++ submissions. */
   gpp?: string;
+  /** True on Windows when the WSL2 launcher exists: a fallback toolchain for
+   *  runtimes missing natively. */
+  wsl?: boolean;
 }
 
 export function checkJudgeRuntimes(): JudgeRuntimes {
+  const python = findPythonBin();
   return {
-    python: findOnPath("python3"),
+    python: python ? findOnPath(python) : undefined,
     deno: findOnPath("deno"),
     javac: findOnPath("javac"),
     gpp: findOnPath("g++"),
+    wsl: isWin32() ? findOnPath("wsl") !== undefined : undefined,
   };
 }
 
@@ -89,3 +47,35 @@ export const RUNTIME_LABELS: {
   { lang: "Java", key: "javac", bin: "javac", note: "also needs `java`" },
   { lang: "C++", key: "gpp", bin: "g++" },
 ];
+
+/** Human-readable judge status for the startup banner and the setup script. */
+export function judgeStatusLines(): string[] {
+  const found = checkJudgeRuntimes();
+  const lines: string[] = [];
+  const present = RUNTIME_LABELS.filter((r) => found[r.key]);
+  const missing = RUNTIME_LABELS.filter((r) => !found[r.key]);
+
+  if (missing.length === 0) {
+    lines.push(
+      `✓  Algo Arena judge: all ${present.length} languages ready (${present.map((r) => r.bin).join(", ")}).`
+    );
+  } else {
+    lines.push("⚙️  Algo Arena judge status:");
+    for (const r of RUNTIME_LABELS) {
+      const p = found[r.key];
+      lines.push(
+        p
+          ? `    ✓  ${r.lang.padEnd(22)} ${r.bin} (${p})`
+          : `    ✗  ${r.lang.padEnd(22)} ${r.bin} not found${r.note ? ` — ${r.note}` : ""}`
+      );
+    }
+    lines.push(
+      `    ${present.length}/${RUNTIME_LABELS.length} languages ready. Install the missing runtimes, ` +
+        "or use Docker which ships them all: `docker compose up -d --build`"
+    );
+  }
+  if (found.wsl) {
+    lines.push("    ℹ️  WSL2 detected — missing native runtimes will be tried inside your Linux distro.");
+  }
+  return lines;
+}

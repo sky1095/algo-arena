@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup.mjs",
+    "setup:prod": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup.mjs --prod",
+    "setup:docker": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup.mjs --docker"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

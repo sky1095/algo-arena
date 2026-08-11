@@ -15,14 +15,42 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
 
 ## Getting started
 
+**Check these first — a plain clone needs more than `npm install`:**
+
+1. **Node.js ≥ 24.** The server uses the built-in `node:sqlite` module; on older
+   Node versions it fails to start. Verify with `node -v`.
+2. **Judge runtimes.** The judge compiles your submissions with your *local*
+   toolchain — nothing is bundled:
+
+   | Submission language | Runtime you need |
+   | --- | --- |
+   | Python | `python3` |
+   | JavaScript / TypeScript | `deno` (Node alone is not enough) |
+   | Java | `javac` + `java` (a JDK) |
+   | C++ | `g++` |
+
+   Missing runtimes don't stop the app — that language's submissions just
+   report a compile error in the workspace console.
+
+**Zero-config option (recommended):** the Docker image bakes in Node 24 **and**
+every judge runtime, so all 5 languages work out of the box:
+
 ```bash
+docker compose up -d --build
+```
+
+**Run from a clone:**
+
+```bash
+git clone <repo-url>
+cd algo-arena
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-> The judge requires local runtimes for the languages you test: `python3`, `deno` (for JS/TS), `javac`/`java`, and `g++`. Missing runtimes report a clear compile error in the console.
+Open [http://localhost:3000](http://localhost:3000). The server prints a banner
+at startup listing which judge languages are ready, so you can see at a glance
+what's installed and what isn't.
 
 ## Self-hosting / deployment
 
@@ -111,7 +139,10 @@ Each problem defines visible + hidden tests, per-language starter code and edito
 
 ## Welcome, students! 🎓
 
-This project is **free and open for anyone to practice on** — no account, no sign-up, no paywall. Clone it, run it locally, and start grinding:
+This project is **free and open for anyone to practice on** — no account, no sign-up, no paywall. Clone it, run it locally, and start grinding — you'll need **Node ≥ 24**
+(`node -v`) and the language runtimes the judge compiles with (`python3`, `deno`
+for JS/TS, `javac`/`java`, `g++`). Or skip all of that with
+`docker compose up -d --build`, which ships everything:
 
 ```bash
 git clone <repo-url>

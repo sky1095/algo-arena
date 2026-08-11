@@ -141,7 +141,36 @@ export interface JudgeOutcome {
 }
 
 export interface UserProfile {
+  id: string;
   email: string;
   name: string;
   joinedAt: number;
+}
+
+export interface ProgressState {
+  solved: string[];
+  attempted: string[];
+  submissions: Submission[];
+  profile: UserProfile | null;
+}
+
+export const emptyProgress: ProgressState = {
+  solved: [],
+  attempted: [],
+  submissions: [],
+  profile: null,
+};
+
+/** Merge two progress states, unioning solved/attempted and de-duping submissions. */
+export function mergeProgressStates(a: ProgressState, b: ProgressState): ProgressState {
+  const solved = [...new Set([...a.solved, ...b.solved])];
+  const attempted = [...new Set([...a.attempted, ...b.attempted])];
+  const byId = new Map<string, Submission>();
+  for (const sub of [...a.submissions, ...b.submissions]) byId.set(sub.id, sub);
+  const submissions = [...byId.values()].sort((x, y) => y.createdAt - x.createdAt).slice(0, 200);
+  const profile =
+    a.profile && b.profile
+      ? (a.profile.joinedAt <= b.profile.joinedAt ? a.profile : b.profile)
+      : (a.profile ?? b.profile);
+  return { solved, attempted, submissions, profile };
 }

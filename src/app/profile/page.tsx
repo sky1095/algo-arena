@@ -1,21 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
-import { CalendarDays, CheckCircle2, Flame, RotateCcw, Target } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { CalendarDays, CheckCircle2, Download, Flame, RotateCcw, Target, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { CATEGORIES } from "@/lib/data/categories";
 import { ALL_PROBLEMS, problemsInCategory } from "@/lib/data/problems";
-import { useProgress } from "@/lib/progress";
+import { useProgress, type ImportResult } from "@/lib/progress";
+import { useAuthDialog } from "@/components/auth-dialog";
 import { difficultyTextColor, formatRuntime } from "@/lib/format";
 import { languageById } from "@/lib/judge/languages";
 import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
-  const { profile, solvedCount, attemptedCount, streak, statusOf, submissions, resetProgress } =
-    useProgress();
+  const {
+    profile,
+    solvedCount,
+    attemptedCount,
+    streak,
+    statusOf,
+    submissions,
+    resetProgress,
+    exportData,
+    importData,
+    unlockBackup,
+    mergeProgress,
+    signIn,
+  } = useProgress();
+  const { openWith, setPendingImport } = useAuthDialog();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportPassword, setExportPassword] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  const [unlockPassword, setUnlockPassword] = useState("");
+  const [unlocking, setUnlocking] = useState(false);
+  const [pendingUnlockFile, setPendingUnlockFile] = useState<File | null>(null);
 
   const byDifficulty = useMemo(() => {
     const out = { Easy: 0, Medium: 0, Hard: 0 };
@@ -32,6 +64,111 @@ export default function ProfilePage() {
     if (confirm("Reset all progress, submissions and streak? This cannot be undone.")) {
       resetProgress();
       toast.info("Progress reset");
+    }
+  };
+
+  const handleExport = () => {
+    // Export is account-only: prompt guests to sign up first.
+    if (!profile) {
+      toast.info("Create an account to export your progress.");
+      openWith({ mode: "signup" });
+      return;
+    }
+    // Nothing to back up yet — don't download an empty file.
+    if (solvedCount === 0 && submissions.length === 0) {
+      toast.info("Nothing to export yet — solve a problem first.");
+      return;
+    }
+    setExportPassword("");
+    setExportOpen(true);
+  };
+
+  const submitExport = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const { solvedCount: solved, submissionCount: subs } = await exportData(exportPassword);
+      toast.success(`Exported ${solved} solved, ${subs} submissions (password protected)`);
+      setExportOpen(false);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  /** Shared post-parse handling: attach via auth, or merge straight away. */
+  const applyImported = (result: ImportResult) => {
+    if (!result.state) return;
+    // Signed out and the backup carries an account email: the import only lands
+    // after that account has authenticated.
+    if (!profile && result.email) {
+      setPendingImport(result.state);
+      openWith({ mode: "signin", email: result.email });
+      toast.info("Backup ready — sign in to attach it.");
+      return;
+    }
+    // No email in the backup (or already signed in): merge straight away.
+    mergeProgress(result.state);
+    toast.success(`Imported — ${result.solvedCount} solved, ${result.submissionCount} submissions`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-importing the same file later
+    if (!file) return;
+    const result = await importData(file);
+    if (!result.ok) {
+      toast.error(result.error ?? "Import failed.");
+      return;
+    }
+    // Password-protected backup: ask for the password before anything is read.
+    if (result.encrypted) {
+      setPendingUnlockFile(file);
+      setUnlockPassword("");
+      setUnlockOpen(true);
+      toast.info("This backup is password protected — enter the password to unlock it.");
+      return;
+    }
+    applyImported(result);
+  };
+
+  const submitUnlock = async () => {
+    if (unlocking || !pendingUnlockFile) return;
+    setUnlocking(true);
+    let success = false;
+    try {
+      const result = await unlockBackup(pendingUnlockFile, unlockPassword);
+      if (!result.ok || !result.state) {
+        toast.error(result.error ?? "Could not unlock this backup.");
+        return; // wrong password — keep the dialog open to retry
+      }
+      // The password was just proven by decryption — if there's an account email
+      // and we're signed out, attach with the same password directly.
+      if (!profile && result.email) {
+        const r = await signIn(result.email, unlockPassword);
+        if (r.ok) {
+          mergeProgress(result.state);
+          toast.success("Backup unlocked and attached to your account");
+        } else {
+          setPendingImport(result.state);
+          openWith({ mode: "signin", email: result.email });
+          toast.info("Backup unlocked — sign in to attach it.");
+        }
+      } else {
+        mergeProgress(result.state);
+        toast.success(`Unlocked — ${result.solvedCount} solved, ${result.submissionCount} submissions`);
+      }
+      success = true;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not unlock this backup.");
+    } finally {
+      setUnlocking(false);
+      if (success) {
+        setUnlockOpen(false);
+        setPendingUnlockFile(null);
+        setUnlockPassword("");
+      }
     }
   };
 
@@ -55,6 +192,109 @@ export default function ProfilePage() {
           <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset progress
         </Button>
       </div>
+
+      <div className="mt-8 rounded-xl border bg-card p-5">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-semibold">Backup your data</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Export your progress as a JSON file to keep it safe or move it to another
+              machine — import it back anytime to restore or merge. Your file contains
+              everything: solved problems, attempts and submissions.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="mr-1.5 h-3.5 w-3.5" /> Export data
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              <Upload className="mr-1.5 h-3.5 w-3.5" /> Import data
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={handleImport}
+            />
+          </div>
+        </div>
+      </div>
+
+      <Dialog open={exportOpen} onOpenChange={setExportOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Protect your backup</DialogTitle>
+            <DialogDescription>
+              Enter your account password to encrypt this backup. The same password
+              unlocks it on any machine — including where your account doesn&apos;t exist.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="grid gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitExport();
+            }}
+          >
+            <div className="grid gap-2">
+              <Label htmlFor="export-password">Password</Label>
+              <Input
+                id="export-password"
+                type="password"
+                value={exportPassword}
+                onChange={(e) => setExportPassword(e.target.value)}
+                placeholder="Your account password"
+                autoComplete="current-password"
+                autoFocus
+                required
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full" disabled={exporting}>
+                {exporting ? "Encrypting…" : "Encrypt & download"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={unlockOpen} onOpenChange={setUnlockOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Unlock backup</DialogTitle>
+            <DialogDescription>
+              Enter the password this backup was encrypted with to read your progress.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="grid gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitUnlock();
+            }}
+          >
+            <div className="grid gap-2">
+              <Label htmlFor="unlock-password">Password</Label>
+              <Input
+                id="unlock-password"
+                type="password"
+                value={unlockPassword}
+                onChange={(e) => setUnlockPassword(e.target.value)}
+                placeholder="Backup password"
+                autoComplete="current-password"
+                autoFocus
+                required
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full" disabled={unlocking}>
+                {unlocking ? "Unlocking…" : "Unlock"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border bg-card p-5">

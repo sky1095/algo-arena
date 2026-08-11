@@ -123,6 +123,18 @@ export async function judgeSolution(req: JudgeRequest): Promise<JudgeOutcome> {
   let anyFailed = false;
   let anyError = false;
 
+  // When the process died before printing results, surface the interpreter's
+  // stderr (traceback, syntax error, missing module...) so the user can see
+  // what actually went wrong instead of a bare "process exited" message.
+  const crashDetail = (() => {
+    if (exec.timedOut) return "";
+    const stderr = exec.stderr.trim();
+    if (!stderr) return "";
+    const lines = stderr.split("\n");
+    const tail = lines.slice(-8).join("\n");
+    return tail.length > 1400 ? tail.slice(-1400) : tail;
+  })();
+
   for (let i = 0; i < req.testCases.length; i++) {
     const tc = req.testCases[i];
     const p = byIndex.get(i);
@@ -132,7 +144,11 @@ export async function judgeSolution(req: JudgeRequest): Promise<JudgeOutcome> {
         passed: false,
         output: null,
         expected: tc.output,
-        error: exec.timedOut ? "Time limit exceeded" : "Process exited before returning a result",
+        error: exec.timedOut
+          ? "Time limit exceeded"
+          : crashDetail
+            ? "Process exited before returning a result:\n" + crashDetail
+            : "Process exited before returning a result",
         timedOut: exec.timedOut,
       });
       anyFailed = true;

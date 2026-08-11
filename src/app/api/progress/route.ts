@@ -1,27 +1,24 @@
 import { NextResponse } from "next/server";
-import { loadProgress, saveProgress, type ProgressState } from "@/lib/progress-store";
+import type { NextRequest } from "next/server";
+import { publicUser } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth";
+import { getProgressFile, saveProgressFile } from "@/lib/progress-store";
+import { emptyProgress, type ProgressState } from "@/lib/types";
 
-/** Merge two progress states, unioning solved/attempted and de-duping submissions. */
-function mergeStates(a: ProgressState, b: ProgressState): ProgressState {
-  const solved = [...new Set([...a.solved, ...b.solved])];
-  const attempted = [...new Set([...a.attempted, ...b.attempted])];
-  const byId = new Map<string, (typeof a.submissions)[number]>();
-  for (const sub of [...a.submissions, ...b.submissions]) byId.set(sub.id, sub);
-  const submissions = [...byId.values()].sort((x, y) => y.createdAt - x.createdAt).slice(0, 200);
-  return {
-    solved,
-    attempted,
-    submissions,
-    profile: b.profile ?? a.profile,
-  };
+export async function GET(req: NextRequest) {
+  const user = getSessionUser(req);
+  if (!user) return NextResponse.json(emptyProgress);
+  const state = getProgressFile(user.id) ?? { ...emptyProgress };
+  return NextResponse.json({ ...state, profile: publicUser(user) });
 }
 
-export async function GET() {
-  const state = await loadProgress();
-  return NextResponse.json(state);
-}
+export async function POST(req: NextRequest) {
+  const user = getSessionUser(req);
+  if (!user) {
+    // Guests keep their progress in localStorage; only accounts persist to disk.
+    return NextResponse.json({ ok: false, reason: "not-signed-in" }, { status: 401 });
+  }
 
-export async function POST(req: Request) {
   let incoming: unknown;
   try {
     incoming = await req.json();
@@ -29,8 +26,29 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const base = await loadProgress();
-  const next = mergeStates(base, incoming as ProgressState);
-  await saveProgress(next);
-  return NextResponse.json({ ok: true, saved: next });
+  const state = sanitizeState(incoming);
+  const saved = saveProgressFile(user.id, state);
+  return NextResponse.json({ ok: true, saved: { ...saved, profile: publicUser(user) } });
+}
+
+function sanitizeState(v: unknown): ProgressState {
+  const s = (v ?? {}) as Partial<ProgressState>;
+  return {
+    solved: Array.isArray(s.solved) ? s.solved.filter((x): x is string => typeof x === "string") : [],
+    attempted: Array.isArray(s.attempted) ? s.attempted.filter((x): x is string => typeof x === "string") : [],
+    submissions: Array.isArray(s.submissions) ? s.submissions.filter(isSubmission) : [],
+    profile: null, // profile is always read from the users table, never the client
+  };
+}
+
+function isSubmission(v: unknown): boolean {
+  if (!v || typeof v !== "object") return false;
+  const s = v as { id?: unknown; slug?: unknown; language?: unknown; status?: unknown; createdAt?: unknown };
+  return (
+    typeof s.id === "string" &&
+    typeof s.slug === "string" &&
+    typeof s.language === "string" &&
+    typeof s.status === "string" &&
+    typeof s.createdAt === "number"
+  );
 }

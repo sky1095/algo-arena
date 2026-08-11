@@ -1,74 +1,71 @@
-import { promises as fs } from "fs";
-import path from "path";
-import type { Submission, UserProfile } from "@/lib/types";
+import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import type { ProgressState, Submission } from "@/lib/types";
+import { emptyProgress, mergeProgressStates } from "@/lib/types";
 
 /**
- * Server-side, file-backed progress store. Progress is persisted to
- * `data/progress.json` in the repo root so it survives browser sessions
- * (cleared storage, new devices, incognito) for as long as the project
- * directory does.
+ * Per-user progress store: one JSON file per user, mirroring the client's
+ * ProgressState shape exactly (solved / attempted / submissions). There is no
+ * unified table holding everyone's progress — each account owns its own file,
+ * which is exactly what the Export/Import feature moves around.
  *
- * This module touches the filesystem and must only be imported from
- * server code (API routes), never from client components.
+ * Files live in `data/progress/<userId>.json` by default (override with
+ * `PROGRESS_DIR`). Writes are atomic (tmp file + rename), so a crash never
+ * corrupts a user's file.
  */
 
-export interface ProgressState {
-  solved: string[];
-  attempted: string[];
-  submissions: Submission[];
-  profile: UserProfile | null;
+const PROGRESS_DIR = process.env.PROGRESS_DIR ?? path.join(process.cwd(), "data", "progress");
+
+function fileFor(userId: string): string {
+  return path.join(PROGRESS_DIR, `${userId}.json`);
 }
 
-export const emptyProgress: ProgressState = {
-  solved: [],
-  attempted: [],
-  submissions: [],
-  profile: null,
-};
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const PROGRESS_FILE = path.join(DATA_DIR, "progress.json");
-
-function sanitize(value: unknown): ProgressState {
-  const v = (value ?? {}) as Partial<ProgressState>;
-  return {
-    solved: Array.isArray(v.solved) ? v.solved.filter((s): s is string => typeof s === "string") : [],
-    attempted: Array.isArray(v.attempted) ? v.attempted.filter((s): s is string => typeof s === "string") : [],
-    submissions: Array.isArray(v.submissions) ? v.submissions.filter(isSubmission) : [],
-    profile: isProfile(v.profile) ? v.profile : null,
-  };
+/** Read a user's progress file, or null when they have none yet. */
+export function getProgressFile(userId: string): ProgressState | null {
+  try {
+    const raw = readFileSync(fileFor(userId), "utf8");
+    const parsed = JSON.parse(raw) as Partial<ProgressState>;
+    return {
+      solved: Array.isArray(parsed.solved) ? parsed.solved.filter((s): s is string => typeof s === "string") : [],
+      attempted: Array.isArray(parsed.attempted)
+        ? parsed.attempted.filter((s): s is string => typeof s === "string")
+        : [],
+      submissions: Array.isArray(parsed.submissions) ? parsed.submissions.filter(isSubmission) : [],
+      profile: null, // profile is always derived from the users table, never stored
+    };
+  } catch {
+    return null; // missing or corrupt — caller falls back to empty progress
+  }
 }
 
 function isSubmission(v: unknown): v is Submission {
   if (!v || typeof v !== "object") return false;
-  const s = v as Submission;
-  return typeof s.id === "string" && typeof s.slug === "string" && typeof s.createdAt === "number";
+  const s = v as Partial<Submission>;
+  return (
+    typeof s.id === "string" &&
+    typeof s.slug === "string" &&
+    typeof s.language === "string" &&
+    typeof s.status === "string" &&
+    typeof s.createdAt === "number"
+  );
 }
 
-function isProfile(v: unknown): v is UserProfile {
-  if (!v || typeof v !== "object") return false;
-  const p = v as UserProfile;
-  return typeof p.name === "string" && typeof p.email === "string";
+/** Merge incoming state into the user's stored state and persist it atomically. */
+export function saveProgressFile(userId: string, incoming: ProgressState): ProgressState {
+  mkdirSync(PROGRESS_DIR, { recursive: true });
+  const current = getProgressFile(userId) ?? { ...emptyProgress };
+  const merged = mergeProgressStates(current, incoming);
+  const file = fileFor(userId);
+  const tmp = `${file}.tmp`;
+  writeFileSync(tmp, JSON.stringify(merged, null, 2));
+  renameSync(tmp, file);
+  return merged;
 }
 
-export async function loadProgress(): Promise<ProgressState> {
+export function deleteProgressFile(userId: string): void {
   try {
-    const raw = await fs.readFile(PROGRESS_FILE, "utf8");
-    return sanitize(JSON.parse(raw));
+    unlinkSync(fileFor(userId));
   } catch {
-    // Missing or corrupt file — start fresh.
-    return { ...emptyProgress };
+    // no file — nothing to do
   }
-}
-
-// Serialize writes so concurrent POSTs can't interleave.
-let writeQueue: Promise<void> = Promise.resolve();
-
-export async function saveProgress(next: ProgressState): Promise<void> {
-  const payload = sanitize(next);
-  writeQueue = writeQueue.then(async () => {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    await fs.writeFile(PROGRESS_FILE, JSON.stringify(payload, null, 2), "utf8");
-  });
-  return writeQueue;
 }

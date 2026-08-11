@@ -1230,7 +1230,7 @@ export function buildSubmission(
       const payload = JSON.stringify({ method: methodName, cases, argTypes, void: outputType === "void" });
       return {
         files: [{ name: "main.py", content: PY_PRELUDE + userCode + PY_HARNESS }],
-        run: ["bash", "-c", `ulimit -v 524288; ulimit -t 8; exec python3 -I -B main.py`],
+        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec python3 -I -B main.py`],
         stdin: payload,
       };
     }
@@ -1243,7 +1243,7 @@ export function buildSubmission(
         run: [
           "bash",
           "-c",
-          `ulimit -v 524288; ulimit -t 8; exec deno run --no-config --no-check --quiet main.${ext}`,
+          `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec deno run --no-config --no-check --quiet main.${ext}`,
         ],
         stdin: payload,
       };
@@ -1306,7 +1306,7 @@ export function buildSubmission(
           { name: "main.cpp", content: CPP_PRELUDE + userCode + "\n" + CPP_MAIN_START + mainBody + CPP_MAIN_END },
         ],
         compile: ["g++", "-std=c++17", "-O2", "-o", "main", "main.cpp"],
-        run: ["bash", "-c", `ulimit -v 524288; ulimit -t 8; exec ./main`],
+        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec ./main`],
       };
     }
   }
@@ -1329,7 +1329,7 @@ function buildClassSubmission(
       const payload = JSON.stringify({ className: spec.className, ops, cases });
       return {
         files: [{ name: "main.py", content: PY_PRELUDE + userCode + PY_CLASS_HARNESS }],
-        run: ["bash", "-c", `ulimit -v 524288; ulimit -t 8; exec python3 -I -B main.py`],
+        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec python3 -I -B main.py`],
         stdin: payload,
       };
     }
@@ -1342,7 +1342,7 @@ function buildClassSubmission(
         run: [
           "bash",
           "-c",
-          `ulimit -v 524288; ulimit -t 8; exec deno run --no-config --no-check --quiet main.${ext}`,
+          `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec deno run --no-config --no-check --quiet main.${ext}`,
         ],
         stdin: payload,
       };
@@ -1420,7 +1420,7 @@ function buildClassSubmission(
           { name: "main.cpp", content: CPP_PRELUDE + userCode + "\n" + CPP_MAIN_START_CLASS + mainBody + CPP_MAIN_END },
         ],
         compile: ["g++", "-std=c++17", "-O2", "-o", "main", "main.cpp"],
-        run: ["bash", "-c", `ulimit -v 524288; ulimit -t 8; exec ./main`],
+        run: ["bash", "-c", `ulimit -v 524288 2>/dev/null; ulimit -t 8; exec ./main`],
       };
     }
   }

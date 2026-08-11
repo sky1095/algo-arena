@@ -47,6 +47,9 @@ function runProcess(
     let stdout = "";
     let stderr = "";
     let settled = false;
+    // Cap captured output so a runaway print loop can't exhaust server memory
+    // (the judge only ever reports a truncated tail anyway).
+    const MAX_OUT = 64 * 1024;
     const timer = setTimeout(() => {
       if (!settled) {
         settled = true;
@@ -59,8 +62,14 @@ function runProcess(
       }
     }, opts.timeoutMs);
 
-    child.stdout.on("data", (d) => (stdout += d.toString()));
-    child.stderr.on("data", (d) => (stderr += d.toString()));
+    child.stdout.on("data", (d) => {
+      stdout = stdout + d.toString();
+      if (stdout.length > MAX_OUT) stdout = stdout.slice(-MAX_OUT);
+    });
+    child.stderr.on("data", (d) => {
+      stderr = stderr + d.toString();
+      if (stderr.length > MAX_OUT) stderr = stderr.slice(-MAX_OUT);
+    });
     child.on("error", (err) => {
       if (!settled) {
         settled = true;

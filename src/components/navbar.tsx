@@ -27,7 +27,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import { useProgress } from "@/lib/progress";
+import { useAuthDialog } from "@/components/auth-dialog";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -40,10 +42,12 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
-  const { streak, profile, signIn, signOut } = useProgress();
+  const { streak, profile, signIn, signUp, signOut, mergeProgress } = useProgress();
+  const { state: auth, setOpen, setMode, setEmail, setPendingImport } = useAuthDialog();
+  const { open, mode, email, pendingImport } = auth;
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [pending, setPending] = useState(false);
   // next-themes' `resolvedTheme` is undefined during SSR and only resolves on the
   // client after mount, so gate theme-dependent UI behind this flag to avoid
   // hydration mismatches (server renders Moon, client hydrates as Sun).
@@ -55,10 +59,47 @@ export function Navbar() {
 
   useEffect(() => {
     if (open && !profile) {
+      // Reset the entry fields each time the dialog opens (email is managed by
+      // the auth-dialog provider so it can be prefilled, e.g. from an import).
       setName("");
-      setEmail("");
+      setPassword("");
     }
   }, [open, profile]);
+
+  // A backup awaiting authentication is only applied on success — if the dialog
+  // closes without signing in/up, discard the pending import so it never sneaks
+  // into a later session.
+  useEffect(() => {
+    if (!open && pendingImport) setPendingImport(null);
+  }, [open, pendingImport, setPendingImport]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pending) return;
+    setPending(true);
+    try {
+      const result =
+        mode === "signup"
+          ? await signUp(name.trim(), email.trim(), password)
+          : await signIn(email.trim(), password);
+      if (result.ok) {
+        // Only now, after the password was verified, do we merge the imported
+        // backup into the account (the guest state merges in along with it).
+        if (pendingImport) {
+          mergeProgress(pendingImport);
+          setPendingImport(null);
+          toast.success(mode === "signup" ? "Account created — backup attached!" : "Backup attached to your account");
+        } else {
+          toast.success(mode === "signup" ? "Account created — welcome!" : `Welcome back!`);
+        }
+        setOpen(false);
+      } else {
+        toast.error(result.error ?? "Something went wrong.");
+      }
+    } finally {
+      setPending(false);
+    }
+  };
 
   const initials = profile
     ? profile.name
@@ -157,31 +198,29 @@ export function Navbar() {
               <DialogTrigger render={<Button size="sm">Sign in</Button>} />
               <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
-                  <DialogTitle>Sign in</DialogTitle>
+                  <DialogTitle>{mode === "signup" ? "Create account" : "Sign in"}</DialogTitle>
                   <DialogDescription>
-                    Demo auth — your progress is stored locally in this browser.
+                    {email
+                      ? `This backup belongs to ${email} — ${mode === "signup" ? "create an account" : "sign in"} to attach your imported progress.`
+                      : mode === "signup"
+                        ? "Create an account to keep your progress synced to the server."
+                        : "Sign in to pick up your progress from any device."}
                   </DialogDescription>
                 </DialogHeader>
-                <form
-                  className="grid gap-4"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (name.trim() && email.trim()) {
-                      signIn(name.trim(), email.trim());
-                      setOpen(false);
-                    }
-                  }}
-                >
-                  <div className="grid gap-2">
-                    <Label htmlFor="signin-name">Name</Label>
-                    <Input
-                      id="signin-name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Ada Lovelace"
-                      required
-                    />
-                  </div>
+                <form className="grid gap-4" onSubmit={handleSubmit}>
+                  {mode === "signup" && (
+                    <div className="grid gap-2">
+                      <Label htmlFor="signin-name">Name</Label>
+                      <Input
+                        id="signin-name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Ada Lovelace"
+                        autoComplete="name"
+                        required
+                      />
+                    </div>
+                  )}
                   <div className="grid gap-2">
                     <Label htmlFor="signin-email">Email</Label>
                     <Input
@@ -190,12 +229,41 @@ export function Navbar() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="ada@example.com"
+                      autoComplete="email"
                       required
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="signin-password">Password</Label>
+                    <Input
+                      id="signin-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={mode === "signup" ? "At least 6 characters" : "••••••••"}
+                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                      required
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto px-0 text-xs"
+                    onClick={() => {
+                      setMode(mode === "signin" ? "signup" : "signin");
+                    }}
+                  >
+                    {mode === "signin"
+                      ? "New here? Create an account"
+                      : "Already have an account? Sign in"}
+                  </Button>
                   <DialogFooter>
-                    <Button type="submit" className="w-full">
-                      Sign in
+                    <Button type="submit" className="w-full" disabled={pending}>
+                      {pending
+                        ? "Please wait…"
+                        : mode === "signup"
+                          ? "Create account"
+                          : "Sign in"}
                     </Button>
                   </DialogFooter>
                 </form>

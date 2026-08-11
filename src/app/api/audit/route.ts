@@ -6,7 +6,11 @@ import type { LanguageId } from "@/lib/types";
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
+/** Dev/QA tool — runs the full judge suite. Never exposed in production. */
 export async function GET(req: Request) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const url = new URL(req.url);
   const only = url.searchParams.get("lang") as LanguageId | null;
   const start = Number(url.searchParams.get("start") ?? 0);

@@ -4,6 +4,9 @@ import { buildSubmission } from "@/lib/judge/harness";
 import { problemBySlug } from "@/lib/data/problems";
 
 export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const url = new URL(req.url);
   const slug = url.searchParams.get("slug") ?? "two-sum";
   const lang = (url.searchParams.get("lang") ?? "python") as never;

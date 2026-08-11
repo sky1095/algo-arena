@@ -33,8 +33,18 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# freebuff preview state
+.freebuff/
+
 # vercel
 .vercel
+
+# local database (accounts only)
+/data/app.db*
+
+# per-user progress files
+/data/progress/
+/data/progress.json
 
 # typescript
 *.tsbuildinfo

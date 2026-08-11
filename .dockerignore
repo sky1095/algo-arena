@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.gitignore
+data
+.freebuff
+*.log
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+README.md
+AGENTS.md
+CLAUDE.md
+screenshots

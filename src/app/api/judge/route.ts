@@ -3,9 +3,16 @@ import { judgeSolution } from "@/lib/judge/judge";
 import { problemBySlug } from "@/lib/data/problems";
 import { libraryProblemAsProblem } from "@/lib/data/library/judge";
 import { languageById } from "@/lib/judge/languages";
+import { checkRateLimit, rateLimited } from "@/lib/rate-limit";
 import type { LanguageId } from "@/lib/types";
 
 export const maxDuration = 60;
+
+/** Reasonable cap — real solutions are a few KB; anything bigger is abuse. */
+const MAX_CODE_BYTES = 50_000;
+
+/** Per-IP submissions per minute (judge runs are CPU-heavy). */
+const JUDGE_RATE_LIMIT = 30;
 
 interface JudgeBody {
   slug: string;
@@ -15,6 +22,11 @@ interface JudgeBody {
 }
 
 export async function POST(req: NextRequest) {
+  const rateHeaders = new Headers();
+  if (checkRateLimit(req, JUDGE_RATE_LIMIT, { headers: rateHeaders }) === 0) {
+    return rateLimited();
+  }
+
   let body: JudgeBody;
   try {
     body = (await req.json()) as JudgeBody;
@@ -32,6 +44,9 @@ export async function POST(req: NextRequest) {
   }
   if (typeof body.code !== "string" || body.code.trim().length === 0) {
     return NextResponse.json({ error: "Empty code" }, { status: 400 });
+  }
+  if (body.code.length > MAX_CODE_BYTES) {
+    return NextResponse.json({ error: "Code too large" }, { status: 413 });
   }
 
   const tests = body.mode === "submit" ? [...problem.visibleTests, ...problem.hiddenTests] : problem.visibleTests;
@@ -65,7 +80,7 @@ export async function POST(req: NextRequest) {
       testCases: tests as never,
       classSpec: problem.classSpec,
     });
-    return NextResponse.json(outcome);
+    return NextResponse.json(outcome, { headers: rateHeaders });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Judge failed" },

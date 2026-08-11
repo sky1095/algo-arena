@@ -8,7 +8,7 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
 - **Monaco editor** (VS Code's editor) with syntax highlighting, served fully offline from `/public/vs`
 - **Run / Submit** with per-test results: expected vs. actual output, runtime errors, timeouts, and compile errors
 - **Editorial solutions** with approach explanations and time/space complexity for every problem
-- **Progress tracking** (solved/attempted, submissions history, streak) stored in `localStorage`
+- **Progress tracking** (solved/attempted, submissions history, streak) — per-account, stored as one JSON file per user (guests fall back to `localStorage`)
 - **Dark / light mode**, shadcn UI components, fully responsive
 
 ![Homepage with stats, daily problem, and category overview](public/screenshots/home.png?v=2)
@@ -22,7 +22,50 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-> The judge requires local runtimes for the languages you test: `python3`, `node`, `tsx` (via node), `javac`/`java`, and `g++`. Missing runtimes report a clear compile error in the console.
+> The judge requires local runtimes for the languages you test: `python3`, `deno` (for JS/TS), `javac`/`java`, and `g++`. Missing runtimes report a clear compile error in the console.
+
+## Self-hosting / deployment
+
+The whole app — judge included — runs in a single container, so you can put it on any VPS or Docker host and users can practice without cloning anything.
+
+```bash
+docker compose up -d --build
+```
+
+- Serves on `http://<your-host>:3000`.
+- The `Dockerfile` bakes in every judge runtime (Python, Deno for JS/TS, Java, C++), so all 5 languages work out of the box.
+- Accounts (login only) live in a SQLite database at `./data/app.db` (mounted as a volume, so it survives rebuilds).
+- **User progress is never kept in a unified database**: each account gets its own JSON file at `data/progress/<userId>.json` — the same file their Export/Import moves around.
+- **Back up the `data/` directory** — it's the only state you have.
+- Put a reverse proxy (Caddy, Nginx, Traefik) in front for HTTPS and a real domain.
+- Node ≥ 24 is required at runtime (the app uses the built-in `node:sqlite` module).
+
+### Security model
+
+- **Judge submissions run as an unprivileged `judge` user** (uid/gid 1001), never as root, so malicious code can't read `/app/data` (accounts DB + every user's progress file) or the host. Each submission gets its own temp dir owned by that user (mode 770), so concurrent submissions can't read each other's files either. Set `JUDGE_UID`/`JUDGE_GID` to disable this in local dev; the compose file already does.
+- **`/api/judge`, signup, signin, and verify-password are rate-limited** per IP (in-memory fixed window — fine for a single instance).
+- **Code size is capped** (50 KB per submission).
+- **`/api/audit` and `/api/debug` are dev-only tools and return 404 in production.**
+- Passwords are **scrypt-hashed** (per-user salt); sessions are opaque random tokens in `httpOnly` cookies.
+- **Known limits**: judge processes have wall-clock timeouts but no hard memory/CPU caps or network egress blocking — fine for a friendly community site, but if you expect hostile multi-tenant use, put the judge behind a real sandbox (gVisor, nsjail, or separate containers) or an external judging service.
+- Rate-limit state is in-memory; scaling to multiple app instances needs a shared store (Redis) instead.
+
+### Local development with accounts
+
+```bash
+npm install
+npm run dev
+```
+
+Sign up from the navbar — progress is saved per account to `data/progress/<userId>.json`. Visitors who don't sign up keep their progress in `localStorage` only; it merges into their account the first time they sign in.
+
+### Portable progress (export / import)
+
+Users own their data. On the **Stats** page, signed-in users can **Export data** to download their solved problems, attempts and submissions, and anyone can **Import data** on this or any other instance to restore or merge it.
+
+- **Exports are encrypted with the account password** (PBKDF2-SHA256 + AES-256-GCM, done client-side with the browser's Web Crypto — no keys stored anywhere). The same password unlocks the file on any machine, so a backup can't be read or imported without it.
+- The inner payload includes the account email (never a plaintext password). Importing an encrypted backup asks for the unlock password first; the progress lands only after decryption (and, for signed-out users, sign-in) succeeds. Legacy unencrypted backups still import.
+- Progress moves between machines without touching the database, so users can take their data with them and plug it into their own copy of the app.
 
 ## Pages
 
@@ -50,13 +93,15 @@ src/
     judge/        harness.ts (per-language code generation), judge.ts (orchestration),
                   runner.ts (subprocess execution), compare.ts (output comparison)
     data/         problems/ (one file per category), categories.ts
-    progress.tsx  localStorage-backed progress store (context)
+    progress.tsx  progress context (auth, per-user storage keys, export/import)
+    progress-store.ts  server-side per-user JSON files (data/progress/<userId>.json)
+    db.ts         SQLite: accounts only (users + sessions)
     types.ts      shared types (Problem, InputType, JudgeOutcome, ...)
 ```
 
 ## How the judge works
 
-`/api/judge` takes `{ slug, lang, code, mode }`. The harness generates a `Main` program per language that constructs each test case from literals, calls your `Solution`/function, serializes results as `@@RESULT` / `@@ERROR` markers, and runs it in a sandboxed subprocess (time/memory limits). The judge parses those markers, compares outputs (with special handling for trees, graphs, linked lists, multi-answer any-order, and in-place `void` mutations), and returns a per-test verdict.
+`/api/judge` takes `{ slug, lang, code, mode }`. The harness generates a `Main` program per language that constructs each test case from literals, calls your `Solution`/function, serializes results as `@@RESULT` / `@@ERROR` markers, and runs it in an isolated subprocess (as the unprivileged `judge` user in Docker, with wall-clock timeouts). The judge parses those markers, compares outputs (with special handling for trees, graphs, linked lists, multi-answer any-order, and in-place `void` mutations), and returns a per-test verdict.
 
 ![Problem workspace: description, editor, console](public/screenshots/workspace.png?v=2)
 
@@ -78,7 +123,7 @@ npm run dev
 - **2,936 problems** to practice with: a curated 150-problem interview roadmap plus a 2,786-problem archive
 - **5 languages** supported by the judge: Python, JavaScript, TypeScript, Java, and C++
 - Every problem has editorial solutions with approach explanations and time/space complexity
-- Your progress (solved, attempts, streak) is saved locally — pick up where you left off
+- Your progress (solved, attempts, streak) is saved per account — or export it as a JSON file from the Stats page and import it anywhere
 
 ## Contributing
 

@@ -70,8 +70,8 @@ export function judgeStatusLines(): string[] {
       );
     }
     lines.push(
-      `    ${present.length}/${RUNTIME_LABELS.length} languages ready. Install the missing runtimes, ` +
-        "or use Docker which ships them all: `docker compose up -d --build`"
+      `    ${present.length}/${RUNTIME_LABELS.length} languages ready. ` +
+        "Auto-install missing runtimes with `npm run setup:runtimes`, or use Docker: `npm run setup:docker`"
     );
   }
   if (found.wsl) {

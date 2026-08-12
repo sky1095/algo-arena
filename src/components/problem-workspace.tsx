@@ -298,12 +298,16 @@ export function ProblemWorkspace({ problem }: Props) {
               Reset
             </Button>
             <Button
+              type="button"
               variant="ghost"
               size="sm"
               className="h-8"
               disabled={formatting || running !== null}
-              onClick={formatCodeInEditor}
-              title={`Format ${languageById(lang)?.label ?? "code"} (Shift+Alt+F)`}
+              onClick={(e) => {
+                e.currentTarget.blur();
+                formatCodeInEditor();
+              }}
+              title={`Format ${languageById(lang)?.label ?? "code"} (Shift+Cmd/Ctrl+F)`}
             >
               {formatting ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -313,12 +317,16 @@ export function ProblemWorkspace({ problem }: Props) {
               Format
             </Button>
             <Button
+              type="button"
               variant="outline"
               size="sm"
               className="h-8"
               disabled={running !== null}
-              onClick={() => judge("run")}
-              title="Run (Ctrl/Cmd+Enter)"
+              onClick={(e) => {
+                e.currentTarget.blur();
+                judge("run");
+              }}
+              title="Run (Ctrl/Cmd+;)"
             >
               {running === "run" ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -328,10 +336,14 @@ export function ProblemWorkspace({ problem }: Props) {
               Run
             </Button>
             <Button
+              type="button"
               size="sm"
               className="h-8"
               disabled={running !== null}
-              onClick={() => judge("submit")}
+              onClick={(e) => {
+                e.currentTarget.blur();
+                judge("submit");
+              }}
             >
               {running === "submit" ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -350,12 +362,15 @@ export function ProblemWorkspace({ problem }: Props) {
               onChange={setCode}
               onMount={(editor, monaco) => {
                 editorRef.current = editor;
-                // Run: Ctrl/Cmd+Enter · Format: Shift+Alt+F (dynamic bindings win over Monaco defaults).
-                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                // Run: Ctrl/Cmd+; · Format: Shift+Cmd/Ctrl+F (dynamic bindings win over Monaco defaults).
+                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Semicolon, () => {
                   void actionsRef.current?.judge("run");
                 });
-                editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.Enter, () => {
+                editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.Semicolon, () => {
                   void actionsRef.current?.judge("run");
+                });
+                editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF, () => {
+                  void actionsRef.current?.format();
                 });
                 editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
                   void actionsRef.current?.format();

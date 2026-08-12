@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import { Code2, Flame, LogOut, Moon, Sun, UserRound } from "lucide-react";
+import { Code2, Flame, LogOut, Moon, Sun, Upload, UserRound } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { useProgress } from "@/lib/progress";
+import { useProgress, type ImportResult } from "@/lib/progress";
 import { useAuthDialog } from "@/components/auth-dialog";
 import { cn } from "@/lib/utils";
 
@@ -42,12 +42,17 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
-  const { streak, profile, signIn, signUp, signOut, mergeProgress } = useProgress();
+  const { streak, profile, signIn, signUp, signOut, mergeProgress, importData, unlockBackup } = useProgress();
   const { state: auth, setOpen, setMode, setEmail, setPendingImport } = useAuthDialog();
   const { open, mode, email, pendingImport } = auth;
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // A password-protected backup picked in this dialog, waiting to be unlocked.
+  const [backupFile, setBackupFile] = useState<File | null>(null);
+  const [backupPassword, setBackupPassword] = useState("");
+  const [unlocking, setUnlocking] = useState(false);
   // next-themes' `resolvedTheme` is undefined during SSR and only resolves on the
   // client after mount, so gate theme-dependent UI behind this flag to avoid
   // hydration mismatches (server renders Moon, client hydrates as Sun).
@@ -63,14 +68,20 @@ export function Navbar() {
       // the auth-dialog provider so it can be prefilled, e.g. from an import).
       setName("");
       setPassword("");
+      setBackupFile(null);
+      setBackupPassword("");
     }
   }, [open, profile]);
 
   // A backup awaiting authentication is only applied on success — if the dialog
-  // closes without signing in/up, discard the pending import so it never sneaks
-  // into a later session.
+  // closes without signing in/up, discard the pending import (and any picked
+  // encrypted file) so it never sneaks into a later session.
   useEffect(() => {
-    if (!open && pendingImport) setPendingImport(null);
+    if (!open) {
+      setPendingImport(null);
+      setBackupFile(null);
+      setBackupPassword("");
+    }
   }, [open, pendingImport, setPendingImport]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,6 +109,81 @@ export function Navbar() {
       }
     } finally {
       setPending(false);
+    }
+  };
+
+  /** Shared post-parse handling for backups picked in this dialog. */
+  const applyImported = (result: ImportResult) => {
+    if (!result.state) return;
+    // Backup belongs to an account: attach it only after that account signs in.
+    if (result.email) {
+      setPendingImport(result.state);
+      setMode("signin");
+      setEmail(result.email);
+      toast.info("Backup ready — sign in to attach it.");
+      return;
+    }
+    // Email-less backup: merge straight into the current (guest) state.
+    mergeProgress(result.state);
+    toast.success(`Imported — ${result.solvedCount} solved, ${result.submissionCount} submissions`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-importing the same file later
+    if (!file) return;
+    const result = await importData(file);
+    if (!result.ok) {
+      toast.error(result.error ?? "Import failed.");
+      return;
+    }
+    // Password-protected backup: ask for the password before anything is read.
+    if (result.encrypted) {
+      setBackupFile(file);
+      setBackupPassword("");
+      toast.info("This backup is password protected — enter its password to unlock it.");
+      return;
+    }
+    applyImported(result);
+  };
+
+  const submitUnlock = async () => {
+    if (unlocking || !backupFile) return;
+    setUnlocking(true);
+    try {
+      const result = await unlockBackup(backupFile, backupPassword);
+      if (!result.ok || !result.state) {
+        toast.error(result.error ?? "Could not unlock this backup.");
+        return; // wrong password — keep the field so they can retry
+      }
+      // The password was just proven by decryption — if the backup belongs to an
+      // account, it's almost certainly the account password too, so sign in with
+      // the same one instead of asking for it again.
+      if (result.email) {
+        const r = await signIn(result.email, backupPassword);
+        if (r.ok) {
+          mergeProgress(result.state);
+          toast.success("Backup unlocked and attached to your account");
+          setOpen(false);
+        } else {
+          // Passwords differ (or the account doesn't exist here) — fall back to
+          // the regular sign-in flow with the email prefilled.
+          setPendingImport(result.state);
+          setMode("signin");
+          setEmail(result.email);
+          toast.info("Backup unlocked — enter your account password to attach it.");
+        }
+      } else {
+        // Email-less backup: merge straight into the current (guest) state.
+        mergeProgress(result.state);
+        toast.success(`Unlocked — ${result.solvedCount} solved, ${result.submissionCount} submissions`);
+      }
+      setBackupFile(null);
+      setBackupPassword("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not unlock this backup.");
+    } finally {
+      setUnlocking(false);
     }
   };
 
@@ -207,6 +293,34 @@ export function Navbar() {
                         : "Sign in to pick up your progress from any device."}
                   </DialogDescription>
                 </DialogHeader>
+                {backupFile && (
+                  <div className="grid gap-2 rounded-lg border bg-muted/40 p-3">
+                    <Label htmlFor="backup-password">Backup password</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="backup-password"
+                        type="password"
+                        value={backupPassword}
+                        onChange={(e) => setBackupPassword(e.target.value)}
+                        placeholder="Password this backup was encrypted with"
+                        autoComplete="current-password"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="shrink-0"
+                        onClick={submitUnlock}
+                        disabled={unlocking || !backupPassword}
+                      >
+                        {unlocking ? "…" : "Unlock"}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Enter the password this backup was encrypted with — if it&apos;s your
+                      account password, you&apos;ll be signed in automatically.
+                    </p>
+                  </div>
+                )}
                 <form className="grid gap-4" onSubmit={handleSubmit}>
                   {mode === "signup" && (
                     <div className="grid gap-2">
@@ -257,6 +371,21 @@ export function Navbar() {
                       ? "New here? Create an account"
                       : "Already have an account? Sign in"}
                   </Button>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto px-0 text-xs"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="mr-1 h-3.5 w-3.5" /> Import a backup file…
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/json,.json"
+                    className="hidden"
+                    onChange={handleImport}
+                  />
                   <DialogFooter>
                     <Button type="submit" className="w-full" disabled={pending}>
                       {pending

@@ -59,6 +59,7 @@ Alternatives:
 ```bash
 npm run setup:prod      # build once, then serve (production mode)
 npm run setup:docker    # Docker image — every judge runtime included
+npm run setup:runtimes  # auto-install missing host runtimes (Python, Deno, Java, C++)
 ```
 
 Or do it by hand: `npm install && npm run dev`, then open

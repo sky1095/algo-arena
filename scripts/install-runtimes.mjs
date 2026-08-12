@@ -70,68 +70,109 @@ async function main() {
 
 async function installWindows(missing) {
   const hasWinget = findOnPath("winget") !== undefined;
-  if (!hasWinget) {
-    log("winget not found on system PATH. Attempting PowerShell installation for Deno...");
+
+  if (hasWinget) {
+    log("Updating winget package sources…");
+    try {
+      await run("winget", ["source", "update"]);
+    } catch {
+      // ignore if winget source update fails, try installing anyway
+    }
   }
 
   for (const item of missing) {
     log(`\n--> Installing ${item.lang} (${item.bin})…`);
-    try {
-      if (item.key === "python") {
-        if (hasWinget) {
-          await run("winget", [
-            "install",
-            "--id",
-            "Python.Python.3.12",
-            "--exact",
-            "--accept-source-agreements",
-            "--accept-package-agreements",
-          ]);
-        } else {
-          log("Please install Python 3 manually from https://www.python.org/downloads/ (check 'Add python.exe to PATH').");
-        }
-      } else if (item.key === "deno") {
-        if (hasWinget) {
+    let installed = false;
+
+    if (item.key === "deno") {
+      if (hasWinget) {
+        try {
           await run("winget", [
             "install",
             "--id",
             "DenoLand.Deno",
-            "--exact",
             "--accept-source-agreements",
             "--accept-package-agreements",
           ]);
-        } else {
-          await run("powershell", ["-Command", "irm https://deno.land/install.ps1 | iex"]);
+          installed = true;
+        } catch (err) {
+          log(`winget failed for Deno (${err.message}). Trying PowerShell fallback…`);
         }
-      } else if (item.key === "gpp") {
-        if (hasWinget) {
+      }
+      if (!installed) {
+        try {
+          await run("powershell", ["-Command", "irm https://deno.land/install.ps1 | iex"]);
+          installed = true;
+        } catch (err) {
+          console.error("[install-runtimes] PowerShell Deno install failed:", err.message);
+        }
+      }
+    } else if (item.key === "gpp") {
+      if (hasWinget) {
+        try {
           await run("winget", [
             "install",
             "--id",
             "w64devkit",
-            "--exact",
             "--accept-source-agreements",
             "--accept-package-agreements",
           ]);
-        } else {
-          log("Please install MinGW / g++ manually (e.g. via MSYS2 https://www.msys2.org/ or Chocolatey: choco install mingw).");
+          installed = true;
+        } catch (err) {
+          log(`winget w64devkit failed (${err.message}). Trying GNU.GCC fallback…`);
+          try {
+            await run("winget", [
+              "install",
+              "--id",
+              "GNU.GCC",
+              "--accept-source-agreements",
+              "--accept-package-agreements",
+            ]);
+            installed = true;
+          } catch {
+            // fallback below
+          }
         }
-      } else if (item.key === "javac") {
-        if (hasWinget) {
+      }
+      if (!installed) {
+        log("Please install MinGW / g++ manually (e.g. via MSYS2 https://www.msys2.org/ or w64devkit https://github.com/skeeto/w64devkit/releases).");
+      }
+    } else if (item.key === "python") {
+      if (hasWinget) {
+        try {
+          await run("winget", [
+            "install",
+            "--id",
+            "Python.Python.3.12",
+            "--accept-source-agreements",
+            "--accept-package-agreements",
+          ]);
+          installed = true;
+        } catch (err) {
+          console.error("[install-runtimes] winget Python install failed:", err.message);
+        }
+      }
+      if (!installed) {
+        log("Please install Python 3 manually from https://www.python.org/downloads/ (check 'Add python.exe to PATH').");
+      }
+    } else if (item.key === "javac") {
+      if (hasWinget) {
+        try {
           await run("winget", [
             "install",
             "--id",
             "Microsoft.OpenJDK.21",
-            "--exact",
             "--accept-source-agreements",
             "--accept-package-agreements",
           ]);
-        } else {
-          log("Please install JDK 21+ manually from https://learn.microsoft.com/en-us/java/openjdk/download.");
+          installed = true;
+        } catch (err) {
+          console.error("[install-runtimes] winget JDK install failed:", err.message);
         }
       }
-    } catch (err) {
-      console.error(`[install-runtimes] Warning: Failed to install ${item.lang}:`, err.message);
+      if (!installed) {
+        log("Please install JDK 21+ manually from https://learn.microsoft.com/en-us/java/openjdk/download.");
+      }
     }
   }
 }

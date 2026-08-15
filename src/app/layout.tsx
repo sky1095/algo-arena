@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthDialogProvider } from "@/components/auth-dialog";
+import { PWARegister } from "@/components/pwa-register";
 import { ProgressProvider } from "@/lib/progress";
 import { Navbar } from "@/components/navbar";
 import "./globals.css";
@@ -21,6 +22,14 @@ export const metadata: Metadata = {
   title: "Algo Arena — Coding Interview Practice",
   description:
     "A curated roadmap of classic algorithm problems with a built-in judge supporting Python, JavaScript, TypeScript, Java and C++.",
+  appleWebApp: {
+    capable: true,
+    title: "Algo Arena",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    apple: [{ url: "/icons/icon-180.png" }],
+  },
 };
 
 export default function RootLayout({
@@ -48,6 +57,7 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col font-sans">
+        <PWARegister />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

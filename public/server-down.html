@@ -1,0 +1,268 @@
+<!doctype html>
+<!--
+  Algo Arena — "server not running" screen.
+
+  Served from the service worker cache whenever a page navigation fails because
+  the backend is unreachable. It is fully self-contained on purpose: no external
+  fonts, images or scripts, so it renders even with the server down and no
+  network. Matches the app's look (zinc dark tile + blue-600 "A" crossbar).
+
+  When the server comes back, this page notices (a light probe every 5s) and
+  reloads into the app automatically — no button needed.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#09090b" />
+  <title>Algo Arena — Server isn't running</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --fg: #09090b;
+      --muted: #71717a;
+      --border: rgba(9, 9, 11, 0.1);
+      --accent: #2563eb;
+      --accent-fg: #ffffff;
+      --code-bg: #f4f4f5;
+      --dot: #dc2626;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --card: #18181b;
+        --fg: #f4f4f5;
+        --muted: #a1a1aa;
+        --border: rgba(255, 255, 255, 0.1);
+        --accent: #3b82f6;
+        --accent-fg: #ffffff;
+        --code-bg: #09090b;
+        --dot: #ef4444;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .mark { display: inline-block; margin-bottom: 18px; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--dot);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.25;
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0 0 18px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    p code { font-size: 13px; }
+
+    .command {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 10px 10px 14px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .command code {
+      flex: 1;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      color: var(--fg);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .command button {
+      flex-shrink: 0;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 12px;
+      cursor: pointer;
+    }
+    .command button:hover { filter: brightness(1.08); }
+    .command button:active { transform: translateY(1px); }
+
+    .actions { display: flex; flex-direction: column; gap: 10px; }
+    .btn {
+      display: inline-block;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: filter 0.15s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-fg);
+      border: none;
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+
+    .tip {
+      margin: 18px 0 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .tip code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 5px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <svg class="mark" width="72" height="72" viewBox="0 0 192 192" aria-hidden="true">
+      <defs>
+        <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2b2b32" />
+          <stop offset="1" stop-color="#09090b" />
+        </linearGradient>
+      </defs>
+      <rect x="8" y="8" width="176" height="176" rx="42" fill="url(#tile)" />
+      <path d="M57.6 142 L96 40.3" stroke="#f4f4f5" stroke-width="7" stroke-linecap="round" fill="none" />
+      <path d="M134.4 142 L96 40.3" stroke="#f4f4f5" stroke-width="7" stroke-linecap="round" fill="none" />
+      <path d="M71 108.5 L121 108.5" stroke="#2563eb" stroke-width="7" stroke-linecap="round" fill="none" />
+    </svg>
+
+    <div class="status"><span class="dot"></span><span>Server offline</span></div>
+
+    <h1>Server isn't running</h1>
+
+    <p id="blurb">
+      The Algo Arena code editor and judge live on the local server, and it
+      can't be reached right now. Start it from the project folder with:
+    </p>
+
+    <div class="command">
+      <code>npm run launch</code>
+      <button id="copy" type="button" title="Copy command">Copy</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="retry" type="button">Try again</button>
+    </div>
+
+    <p class="tip">
+      Once the server is back, this page reconnects automatically.
+      <br />
+      Prefer zero steps? Run <code>npm run launch:autostart</code> once to start
+      the server automatically at login.
+    </p>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // If the device itself is offline, say so instead of blaming the server.
+      if (navigator.onLine === false) {
+        document.getElementById("blurb").textContent =
+          "Your device appears to be offline, so Algo Arena can't reach its " +
+          "local server. Reconnect to the network, then tap \u201cTry again\u201d. " +
+          "When the server is back, this page reconnects on its own.";
+      }
+
+      // Copy the restart command.
+      var copyBtn = document.getElementById("copy");
+      copyBtn.addEventListener("click", function () {
+        var done = function () { copyBtn.textContent = "Copied \u2713"; };
+        var text = "npm run launch";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, done);
+        } else {
+          done();
+        }
+        setTimeout(function () { copyBtn.textContent = "Copy"; }, 2000);
+      });
+
+      // Retry = reload; if the server is back the app loads, otherwise the
+      // service worker serves this page again.
+      document.getElementById("retry").addEventListener("click", function () {
+        location.reload();
+      });
+
+      // Auto-reconnect: probe the origin every 5s (only while online); the
+      // moment it answers, reload into the app.
+      setInterval(function () {
+        if (navigator.onLine === false) return;
+        fetch(location.origin + "/", { cache: "no-store", signal: AbortSignal.timeout(4000) })
+          .then(function (res) { if (res.ok) location.reload(); })
+          .catch(function () { /* still down — keep waiting */ });
+      }, 5000);
+    })();
+  </script>
+</body>
+</html>

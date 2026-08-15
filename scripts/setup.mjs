@@ -43,6 +43,7 @@ for (let i = 0; i < args.length; i++) {
       "Usage: node scripts/setup.mjs [--prod|--docker] [--port N] [--no-open]\n" +
         "  (default)  install deps + start the dev server\n" +
         "  --prod     build once, then serve with the production server\n" +
+        "            (the build is an installable PWA — address-bar install icon)\n" +
         "  --docker   docker compose up -d --build (all judge runtimes included)\n" +
         "  --port N   serve on port N (dev/prod only)\n" +
         "  --no-open  don't open the browser"
@@ -218,6 +219,25 @@ if (needsInstall) {
 /* Start the server                                                    */
 /* ------------------------------------------------------------------ */
 
+if (opts.mode === "prod") {
+  // PWA icons are generated (the repo ships no image assets), so make sure
+  // they exist before the build — otherwise the manifest would 404 them.
+  const iconNames = ["icon-180.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png"];
+  const iconsDir = path.join(ROOT, "public", "icons");
+  if (iconNames.some((f) => !existsSync(path.join(iconsDir, f)))) {
+    log("generating PWA icons…");
+    // Quote on Windows: run() uses `shell: true` there and node.exe lives in
+    // "C:\Program Files\..." (spaces break an unquoted path).
+    const nodeCmd =
+      process.platform === "win32" ? `"${process.execPath}"` : process.execPath;
+    try {
+      await run(nodeCmd, ["scripts/generate-icons.mjs"]);
+    } catch {
+      fail("PWA icon generation failed.");
+    }
+  }
+}
+
 let serverCmd;
 let serverArgs;
 if (opts.mode === "prod") {
@@ -259,4 +279,7 @@ if (!ready) {
 serverReady = true;
 log(`Algo Arena is up at ${url}${opts.open ? " — opening your browser" : ""}.`);
 if (opts.open) openBrowser(url);
+if (opts.mode === "prod") {
+  log("This build is a PWA: install it from the address-bar install icon (or browser menu → Install Algo Arena).");
+}
 log(`Stop it with Ctrl+C. Runtimes missing above? Install them or use 'npm run setup:docker'.`);

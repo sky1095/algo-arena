@@ -67,6 +67,51 @@ Or do it by hand: `npm install && npm run dev`, then open
 banner at startup listing which judge languages are ready, so you can see at a
 glance what's installed and what isn't.
 
+## Installable as a PWA
+
+Every production build is an installable PWA (web app manifest + icons +
+service worker), so `npm run setup:prod` is the "install" command:
+
+```bash
+npm run setup:prod
+```
+
+It checks Node, installs dependencies, generates the PWA icons (pure Node — no
+image tooling), builds, serves the app in production mode (no dev server), and
+opens your browser. Then click the **install icon in the address bar** (or
+browser menu → *Install Algo Arena*) to install it as a standalone app that
+launches like any other application.
+
+- Icons are generated on demand by `scripts/generate-icons.mjs`
+  (`npm run generate:icons`) — nothing binary is committed.
+- The service worker (`public/sw.js`) caches the app shell and static assets
+  (including the offline Monaco editor in `/public/vs`), so pages load
+  instantly; `/api/*` is never cached. If the server is unreachable, a page
+  navigation shows a friendly **"Server isn't running"** screen (served from
+  cache) with the `npm run launch` command and an auto-reconnect that reloads
+  into the app the moment the server is back.
+- Installing requires a **secure context**: `localhost` or HTTPS (e.g. the
+  Caddy reverse proxy in [Self-hosting / deployment](#self-hosting--deployment)).
+  Plain-`http://` access to a LAN IP still works normally, it just isn't
+  installable there.
+- The judge runs server-side, so running/submitting code needs the server to
+  be up — the PWA makes it launch faster and feel native, not fully offline.
+
+#### Launching the PWA (server not running?)
+
+An installed PWA is just a web page — browsers won't let it start the server
+itself. Two ways to make launching it feel automatic:
+
+- **One command, any time:** `npm run launch` starts the production server in
+  the background (logs to `~/.algo-arena/server.log`) if it isn't running
+  already, then opens the app. Handy for the times the server was stopped.
+- **Autostart at login (recommended):** `npm run launch:autostart` registers
+  the server to start in the background at login — a launchd LaunchAgent on
+  macOS, a user systemd service on Linux, or a hidden Task Scheduler entry on
+  Windows — then the PWA always just connects. It only writes to your home
+  directory and prints the one-liner to activate it; `--remove` undoes it,
+  and `--dry-run` shows exactly what would be created.
+
 ## Self-hosting / deployment
 
 The whole app — judge included — runs in a single container, so you can put it on any VPS or Docker host and users can practice without cloning anything.

@@ -10,7 +10,10 @@
     "setup": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup.mjs",
     "setup:prod": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup.mjs --prod",
     "setup:docker": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/setup.mjs --docker",
-    "setup:runtimes": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/install-runtimes.mjs"
+    "setup:runtimes": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/install-runtimes.mjs",
+    "generate:icons": "node scripts/generate-icons.mjs",
+    "launch": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/launch-pwa.mjs",
+    "launch:autostart": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/launch-pwa.mjs autostart"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

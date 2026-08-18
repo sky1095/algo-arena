@@ -2,6 +2,7 @@
   "name": "algo-arena",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,7 +14,9 @@
     "setup:runtimes": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/install-runtimes.mjs",
     "generate:icons": "node scripts/generate-icons.mjs",
     "launch": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/launch-pwa.mjs",
-    "launch:autostart": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/launch-pwa.mjs autostart"
+    "launch:autostart": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/launch-pwa.mjs autostart",
+    "electron:dev": "electron .",
+    "electron:build": "npm run build && electron-builder --config electron-builder.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -44,6 +47,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4",

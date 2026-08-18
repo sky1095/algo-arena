@@ -6,6 +6,7 @@ import { AuthDialogProvider } from "@/components/auth-dialog";
 import { PWARegister } from "@/components/pwa-register";
 import { ProgressProvider } from "@/lib/progress";
 import { Navbar } from "@/components/navbar";
+import { TitleBar } from "@/components/titlebar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -57,6 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col font-sans">
+        <TitleBar />
         <PWARegister />
         <ThemeProvider
           attribute="class"

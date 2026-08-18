@@ -326,7 +326,7 @@ export function ProblemWorkspace({ problem }: Props) {
                 e.currentTarget.blur();
                 judge("run");
               }}
-              title="Run (Ctrl/Cmd+;)"
+              title="Run (Ctrl/Cmd + Enter)"
             >
               {running === "run" ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -363,17 +363,26 @@ export function ProblemWorkspace({ problem }: Props) {
               onMount={(editor, monaco) => {
                 editorRef.current = editor;
                 // Run: Ctrl/Cmd+; · Format: Shift+Cmd/Ctrl+F (dynamic bindings win over Monaco defaults).
-                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Semicolon, () => {
-                  void actionsRef.current?.judge("run");
+                editor.addAction({
+                  id: "run-code",
+                  label: "Run Code",
+                  keybindings: [
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+                  ],
+                  run: () => {
+                    void actionsRef.current?.judge("run");
+                  },
                 });
-                editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.Semicolon, () => {
-                  void actionsRef.current?.judge("run");
-                });
-                editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF, () => {
-                  void actionsRef.current?.format();
-                });
-                editor.addCommand(monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF, () => {
-                  void actionsRef.current?.format();
+                editor.addAction({
+                  id: "format-code",
+                  label: "Format Code",
+                  keybindings: [
+                    monaco.KeyMod.Shift | monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF,
+                    monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF,
+                  ],
+                  run: () => {
+                    void actionsRef.current?.format();
+                  },
                 });
               }}
               theme={editorTheme}

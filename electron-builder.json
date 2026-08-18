@@ -1,0 +1,50 @@
+{
+  "appId": "com.algoarena.desktop",
+  "productName": "Algo Arena",
+  "directories": {
+    "output": "dist-electron"
+  },
+  "files": [
+    "electron/**/*",
+    ".next/**/*",
+    "public/**/*",
+    "node_modules/next/**/*",
+    "node_modules/react/**/*",
+    "node_modules/react-dom/**/*",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "node_modules/next",
+      "to": "node_modules/next"
+    },
+    {
+      "from": "node_modules/react",
+      "to": "node_modules/react"
+    },
+    {
+      "from": "node_modules/react-dom",
+      "to": "node_modules/react-dom"
+    }
+  ],
+  "mac": {
+    "category": "public.app-category.developer-tools",
+    "icon": "public/icons/icon-512.png",
+    "target": ["dmg", "zip"]
+  },
+  "win": {
+    "icon": "public/icons/icon-512.png",
+    "target": ["nsis", "portable"]
+  },
+  "linux": {
+    "icon": "public/icons/icon-512.png",
+    "target": ["AppImage", "deb"],
+    "category": "Development"
+  },
+  "asar": true,
+  "asarUnpack": [
+    "node_modules/next/**/*",
+    "node_modules/react/**/*",
+    "node_modules/react-dom/**/*"
+  ]
+}

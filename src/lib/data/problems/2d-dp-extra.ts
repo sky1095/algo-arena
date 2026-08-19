@@ -21,6 +21,11 @@ export const twoDDpExtra: Problem[] = [
       typescript: `function maxProfit(prices: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int maxProfit(int[] prices) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxProfit(vector<int>& prices) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int maxProfit(List<int> prices) {
+    
+  }
+}`,
     },
     methodName: "maxProfit",
     argTypes: ["int[]"],
@@ -121,6 +126,11 @@ public:
       typescript: `function change(amount: number, coins: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int change(int amount, int[] coins) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int change(int amount, vector<int>& coins) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int change(int amount, List<int> coins) {
+    
+  }
+}`,
     },
     methodName: "change",
     argTypes: ["int", "int[]"],
@@ -218,6 +228,11 @@ public:
       typescript: `function findTargetSumWays(nums: number[], target: number): number {\n    \n}`,
       java: `class Solution {\n    public int findTargetSumWays(int[] nums, int target) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findTargetSumWays(vector<int>& nums, int target) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int findTargetSumWays(List<int> nums, int target) {
+    
+  }
+}`,
     },
     methodName: "findTargetSumWays",
     argTypes: ["int[]", "int"],
@@ -331,6 +346,11 @@ public:
       typescript: `function isInterleave(s1: string, s2: string, s3: string): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean isInterleave(String s1, String s2, String s3) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isInterleave(string s1, string s2, string s3) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool isInterleave(String s1, String s2, String s3) {
+    
+  }
+}`,
     },
     methodName: "isInterleave",
     argTypes: ["string", "string", "string"],
@@ -457,6 +477,11 @@ public:
       typescript: `function longestIncreasingPath(matrix: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int longestIncreasingPath(int[][] matrix) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int longestIncreasingPath(vector<vector<int>>& matrix) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int longestIncreasingPath(List<List<int>> matrix) {
+    
+  }
+}`,
     },
     methodName: "longestIncreasingPath",
     argTypes: ["int[][]"],
@@ -613,6 +638,11 @@ public:
       typescript: `function numDistinct(s: string, t: string): number {\n    \n}`,
       java: `class Solution {\n    public int numDistinct(String s, String t) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numDistinct(string s, string t) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int numDistinct(String s, String t) {
+    
+  }
+}`,
     },
     methodName: "numDistinct",
     argTypes: ["string", "string"],
@@ -713,6 +743,11 @@ public:
       typescript: `function minDistance(word1: string, word2: string): number {\n    \n}`,
       java: `class Solution {\n    public int minDistance(String word1, String word2) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minDistance(string word1, string word2) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int minDistance(String word1, String word2) {
+    
+  }
+}`,
     },
     methodName: "minDistance",
     argTypes: ["string", "string"],
@@ -835,6 +870,11 @@ public:
       typescript: `function maxCoins(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int maxCoins(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxCoins(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int maxCoins(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "maxCoins",
     argTypes: ["int[]"],
@@ -958,6 +998,11 @@ public:
       typescript: `function isMatch(s: string, p: string): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean isMatch(String s, String p) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isMatch(string s, string p) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool isMatch(String s, String p) {
+    
+  }
+}`,
     },
     methodName: "isMatch",
     argTypes: ["string", "string"],

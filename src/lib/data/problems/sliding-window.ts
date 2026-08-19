@@ -40,6 +40,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int maxProfit(List<int> prices) {
+    
+  }
+}`,
     },
     methodName: "maxProfit",
     argTypes: ["int[]"],
@@ -147,6 +152,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int lengthOfLongestSubstring(String s) {
+    
+  }
+}`,
     },
     methodName: "lengthOfLongestSubstring",
     argTypes: ["string"],
@@ -275,6 +285,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int characterReplacement(String s, int k) {
+    
+  }
+}`,
     },
     methodName: "characterReplacement",
     argTypes: ["string", "int"],
@@ -404,6 +419,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  String minWindow(String s, String t) {
+    
+  }
+}`,
     },
     methodName: "minWindow",
     argTypes: ["string", "string"],

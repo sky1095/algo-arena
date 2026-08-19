@@ -35,6 +35,11 @@ export const graphsExtra: Problem[] = [
       typescript: `function maxAreaOfIsland(grid: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int maxAreaOfIsland(int[][] grid) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxAreaOfIsland(vector<vector<int>>& grid) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int maxAreaOfIsland(List<List<int>> grid) {
+    
+  }
+}`,
     },
     methodName: "maxAreaOfIsland",
     argTypes: ["int[][]"],
@@ -186,6 +191,11 @@ public:
       typescript: `function pacificAtlantic(heights: number[][]): number[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<Integer>> pacificAtlantic(int[][] heights) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> pacificAtlantic(List<List<int>> heights) {
+    
+  }
+}`,
     },
     methodName: "pacificAtlantic",
     argTypes: ["int[][]"],
@@ -413,6 +423,11 @@ public:
       typescript: `function wallsAndGates(rooms: number[][]): void {\n    \n}`,
       java: `class Solution {\n    public void wallsAndGates(int[][] rooms) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void wallsAndGates(vector<vector<int>>& rooms) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void wallsAndGates(List<List<int>> rooms) {
+    
+  }
+}`,
     },
     methodName: "wallsAndGates",
     argTypes: ["int[][]"],
@@ -566,6 +581,11 @@ public:
       typescript: `function findOrder(numCourses: number, prerequisites: number[][]): number[] {\n    \n}`,
       java: `class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> findOrder(int numCourses, List<List<int>> prerequisites) {
+    
+  }
+}`,
     },
     methodName: "findOrder",
     argTypes: ["int", "int[][]"],
@@ -711,6 +731,11 @@ public:
       typescript: `function findRedundantConnection(edges: number[][]): number[] {\n    \n}`,
       java: `class Solution {\n    public int[] findRedundantConnection(int[][] edges) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> findRedundantConnection(vector<vector<int>>& edges) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> findRedundantConnection(List<List<int>> edges) {
+    
+  }
+}`,
     },
     methodName: "findRedundantConnection",
     argTypes: ["int[][]"],
@@ -837,6 +862,11 @@ public:
       typescript: `function validTree(n: number, edges: number[][]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean validTree(int n, int[][] edges) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool validTree(int n, vector<vector<int>>& edges) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool validTree(int n, List<List<int>> edges) {
+    
+  }
+}`,
     },
     methodName: "validTree",
     argTypes: ["int", "int[][]"],
@@ -995,6 +1025,11 @@ public:
       typescript: `function ladderLength(beginWord: string, endWord: string, wordList: string[]): number {\n    \n}`,
       java: `class Solution {\n    public int ladderLength(String beginWord, String endWord, List<String> wordList) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int ladderLength(String beginWord, String endWord, List<String> wordList) {
+    
+  }
+}`,
     },
     methodName: "ladderLength",
     argTypes: ["string", "string", "string[]"],

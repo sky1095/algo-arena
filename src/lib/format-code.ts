@@ -33,6 +33,11 @@ export async function formatCode(lang: LanguageId, code: string): Promise<string
       });
       return mod.format(code, filename, style);
     }
+    case "dart":
+      // clang-format does not understand Dart's => arrow syntax and
+      // mangles it into "= >". Return the code unchanged, but first
+      // repair any damage from a previous format pass.
+      return code.replace(/= >/g, "=>");
     default:
       throw new Error("Formatting isn't supported for this language yet.");
   }

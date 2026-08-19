@@ -40,6 +40,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int search(List<int> nums, int target) {
+    
+  }
+}`,
     },
     methodName: "search",
     argTypes: ["int[]", "int"],
@@ -169,6 +174,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool searchMatrix(List<List<int>> matrix, int target) {
+    
+  }
+}`,
     },
     methodName: "searchMatrix",
     argTypes: ["int[][]", "int"],
@@ -303,6 +313,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int minEatingSpeed(List<int> piles, int h) {
+    
+  }
+}`,
     },
     methodName: "minEatingSpeed",
     argTypes: ["int[]", "int"],
@@ -436,6 +451,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int search(List<int> nums, int target) {
+    
+  }
+}`,
     },
     methodName: "search",
     argTypes: ["int[]", "int"],

@@ -43,6 +43,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool isValid(String s) {
+    
+  }
+}`,
     },
     methodName: "isValid",
     argTypes: ["string"],
@@ -184,6 +189,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int evalRPN(List<String> tokens) {
+    
+  }
+}`,
     },
     methodName: "evalRPN",
     argTypes: ["string[]"],
@@ -336,6 +346,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<int> dailyTemperatures(List<int> temperatures) {
+    
+  }
+}`,
     },
     methodName: "dailyTemperatures",
     argTypes: ["int[]"],
@@ -463,6 +478,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int largestRectangleArea(List<int> heights) {
+    
+  }
+}`,
     },
     methodName: "largestRectangleArea",
     argTypes: ["int[]"],

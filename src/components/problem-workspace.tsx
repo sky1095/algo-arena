@@ -17,8 +17,10 @@ import {
   LockKeyhole,
   Play,
   Send,
+  TerminalSquare,
   WandSparkles,
   XCircle,
+  X,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -68,11 +70,12 @@ export function ProblemWorkspace({ problem }: Props) {
   const [running, setRunning] = useState<"run" | "submit" | null>(null);
   const [outcome, setOutcome] = useState<JudgeOutcome | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [consoleOpen, setConsoleOpen] = useState(true);
   const [formatting, setFormatting] = useState(false);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const actionsRef = useRef<{ judge: (mode: "run" | "submit") => Promise<void>; format: () => Promise<void> } | null>(null);
 
-  const code = codeByLang[lang] ?? problem.starter[lang];
+  const code = codeByLang[lang] ?? problem.starter[lang] ?? (languageById(lang)?.defaultTemplate(problem.methodName, problem.argTypes) ?? '');
 
   // Persist edits per problem + language (never clobber saved code with the empty initial state).
   useEffect(() => {
@@ -101,7 +104,7 @@ export function ProblemWorkspace({ problem }: Props) {
   };
 
   const resetCode = () => {
-    setCodeByLang((prev) => ({ ...prev, [lang]: problem.starter[lang] }));
+    setCodeByLang((prev) => ({ ...prev, [lang]: problem.starter[lang] ?? languageById(lang)?.defaultTemplate(problem.methodName, problem.argTypes) ?? '' }));
   };
 
   const formatCodeInEditor = async () => {
@@ -244,7 +247,7 @@ export function ProblemWorkspace({ problem }: Props) {
         </div>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1400px] flex-1 lg:grid-cols-2">
+      <div className="mx-auto grid w-full flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]">
         {/* Left: description / solutions / submissions */}
         <div className="flex min-h-0 flex-col border-b lg:border-b-0 lg:border-r">
           <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
@@ -352,60 +355,92 @@ export function ProblemWorkspace({ problem }: Props) {
               )}
               Submit
             </Button>
+            {!consoleOpen && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-1.5"
+                onClick={() => setConsoleOpen(true)}
+              >
+                <TerminalSquare className="h-3.5 w-3.5" />
+                Console
+                {(running || outcome || apiError) && (
+                  <span className={`h-1.5 w-1.5 rounded-full ${outcome?.status === "Accepted" ? "bg-green-500" : outcome ? "bg-red-500" : running ? "bg-amber-500" : "bg-transparent"}`} />
+                )}
+              </Button>
+            )}
           </div>
 
-          <div className="min-h-[320px] flex-1">
-            <Editor
-              height="100%"
-              language={languageById(lang)?.monaco}
-              value={code}
-              onChange={setCode}
-              onMount={(editor, monaco) => {
-                editorRef.current = editor;
-                // Run: Ctrl/Cmd+; · Format: Shift+Cmd/Ctrl+F (dynamic bindings win over Monaco defaults).
-                editor.addAction({
-                  id: "run-code",
-                  label: "Run Code",
-                  keybindings: [
-                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
-                  ],
-                  run: () => {
-                    void actionsRef.current?.judge("run");
-                  },
-                });
-                editor.addAction({
-                  id: "format-code",
-                  label: "Format Code",
-                  keybindings: [
-                    monaco.KeyMod.Shift | monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF,
-                    monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF,
-                  ],
-                  run: () => {
-                    void actionsRef.current?.format();
-                  },
-                });
-              }}
-              theme={editorTheme}
-              options={{
-                fontSize: 13,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                wordWrap: "on",
-                tabSize: 4,
-                automaticLayout: true,
-                padding: { top: 12 },
-                fontFamily: "var(--font-geist-mono), monospace",
-              }}
-            />
-          </div>
+          <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+            <div className="min-h-[320px] min-w-0 flex-1">
+              <Editor
+                height="100%"
+                language={languageById(lang)?.monaco}
+                value={code}
+                onChange={setCode}
+                onMount={(editor, monaco) => {
+                  editorRef.current = editor;
+                  // Run: Ctrl/Cmd+; · Format: Shift+Cmd/Ctrl+F (dynamic bindings win over Monaco defaults).
+                  editor.addAction({
+                    id: "run-code",
+                    label: "Run Code",
+                    keybindings: [
+                      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+                    ],
+                    run: () => {
+                      void actionsRef.current?.judge("run");
+                    },
+                  });
+                  editor.addAction({
+                    id: "format-code",
+                    label: "Format Code",
+                    keybindings: [
+                      monaco.KeyMod.Shift | monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF,
+                      monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF,
+                    ],
+                    run: () => {
+                      void actionsRef.current?.format();
+                    },
+                  });
+                }}
+                theme={editorTheme}
+                options={{
+                  fontSize: 13,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  wordWrap: "on",
+                  tabSize: 4,
+                  automaticLayout: true,
+                  padding: { top: 12 },
+                  fontFamily: "var(--font-geist-mono), monospace",
+                }}
+              />
+            </div>
 
-          <ConsolePanel
-            running={running}
-            outcome={outcome}
-            apiError={apiError}
-            visibleCount={problem.visibleTests.length}
-            totalCount={problem.visibleTests.length + problem.hiddenTests.length}
-          />
+            {consoleOpen && (
+              <ConsolePanel
+                running={running}
+                outcome={outcome}
+                apiError={apiError}
+                visibleCount={problem.visibleTests.length}
+                totalCount={problem.visibleTests.length + problem.hiddenTests.length}
+                onClose={() => setConsoleOpen(false)}
+              />
+            )}
+          </div>
+          {!consoleOpen && (running || outcome || apiError) && (
+            <button
+              onClick={() => setConsoleOpen(true)}
+              className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border bg-card px-3 py-2 text-sm shadow-lg hover:bg-accent lg:hidden"
+            >
+              <TerminalSquare className="h-4 w-4" />
+              Console
+              {outcome && !running && (
+                <span className={`h-2 w-2 rounded-full ${outcome.status === "Accepted" ? "bg-green-500" : "bg-red-500"}`} />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </main>
@@ -595,6 +630,8 @@ function monacoLangFor(lang: LanguageId): string {
       return "java";
     case "cpp":
       return "cpp";
+    case "dart":
+      return "dart";
   }
 }
 
@@ -650,15 +687,17 @@ function ConsolePanel({
   apiError,
   visibleCount,
   totalCount,
+  onClose,
 }: {
   running: "run" | "submit" | null;
   outcome: JudgeOutcome | null;
   apiError: string | null;
   visibleCount: number;
   totalCount: number;
+  onClose: () => void;
 }) {
   return (
-    <div className="flex h-56 flex-col border-t bg-card">
+    <div className="flex h-[300px] min-h-0 flex-col border-t bg-card lg:h-full lg:w-[380px] lg:min-w-[300px] lg:border-l lg:border-t-0">
       <div className="flex items-center gap-2 border-b px-4 py-2">
         <span className="text-sm font-medium">Console</span>
         {running && (
@@ -668,8 +707,11 @@ function ConsolePanel({
           </span>
         )}
         {outcome && !running && <OutcomeBadge outcome={outcome} />}
+        <button onClick={onClose} className="ml-auto text-muted-foreground hover:text-foreground" title="Close console">
+          <X className="h-4 w-4" />
+        </button>
       </div>
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div className="flex-1 overflow-auto px-4 py-3">
         {apiError && (
           <div className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">
             <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -742,14 +784,14 @@ function OutcomeDetails({ outcome }: { outcome: JudgeOutcome }) {
               {r.error}
             </pre>
           ) : (
-            <div className="mt-1 space-y-0.5 font-mono text-xs">
+            <div className="mt-1 space-y-1 font-mono text-xs">
               <div>
                 <span className="text-muted-foreground">Output: </span>
-                <span>{formatValue(r.output)}</span>
+                <span className="break-all">{formatValue(r.output)}</span>
               </div>
               <div>
                 <span className="text-muted-foreground">Expected: </span>
-                <span>{formatValue(r.expected)}</span>
+                <span className="break-all">{formatValue(r.expected)}</span>
               </div>
             </div>
           )}

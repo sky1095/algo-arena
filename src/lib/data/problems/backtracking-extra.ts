@@ -21,6 +21,11 @@ export const backtrackingExtra: Problem[] = [
       typescript: `function subsetsWithDup(nums: number[]): number[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<Integer>> subsetsWithDup(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> subsetsWithDup(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> subsetsWithDup(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "subsetsWithDup",
     argTypes: ["int[]"],
@@ -146,6 +151,11 @@ public:
       typescript: `function combinationSum2(candidates: number[], target: number): number[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<Integer>> combinationSum2(int[] candidates, int target) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> combinationSum2(List<int> candidates, int target) {
+    
+  }
+}`,
     },
     methodName: "combinationSum2",
     argTypes: ["int[]", "int"],
@@ -323,6 +333,11 @@ public:
       typescript: `function exist(board: string[][], word: string): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean exist(char[][] board, String word) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool exist(vector<vector<char>>& board, string word) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool exist(List<String>[] board, String word) {
+    
+  }
+}`,
     },
     methodName: "exist",
     argTypes: ["char[][]", "string"],
@@ -501,6 +516,11 @@ public:
       typescript: `function partition(s: string): string[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<String>> partition(String s) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<string>> partition(string s) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<String>> partition(String s) {
+    
+  }
+}`,
     },
     methodName: "partition",
     argTypes: ["string"],
@@ -674,6 +694,11 @@ public:
       typescript: `function letterCombinations(digits: string): string[] {\n    \n}`,
       java: `class Solution {\n    public List<String> letterCombinations(String digits) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<string> letterCombinations(string digits) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<String> letterCombinations(String digits) {
+    
+  }
+}`,
     },
     methodName: "letterCombinations",
     argTypes: ["string"],

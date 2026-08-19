@@ -23,6 +23,11 @@ export const stackExtra: Problem[] = [
       typescript: `class MinStack {\n    constructor() {\n        \n    }\n    \n    push(val: number): void {\n        \n    }\n    \n    pop(): void {\n        \n    }\n    \n    top(): number {\n        \n    }\n    \n    getMin(): number {\n        \n    }\n}`,
       java: `class MinStack {\n    public MinStack() {\n        \n    }\n    \n    public void push(int val) {\n        \n    }\n    \n    public void pop() {\n        \n    }\n    \n    public int top() {\n        \n    }\n    \n    public int getMin() {\n        \n    }\n}`,
       cpp: `class MinStack {\npublic:\n    MinStack() {\n        \n    }\n    \n    void push(int val) {\n        \n    }\n    \n    void pop() {\n        \n    }\n    \n    int top() {\n        \n    }\n    \n    int getMin() {\n        \n    }\n};`,
+      dart: `class Solution {
+  void push(int val) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -138,6 +143,11 @@ public:
       typescript: `function generateParenthesis(n: number): string[] {\n    \n}`,
       java: `class Solution {\n    public List<String> generateParenthesis(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<string> generateParenthesis(int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<String> generateParenthesis(int n) {
+    
+  }
+}`,
     },
     methodName: "generateParenthesis",
     argTypes: ["int"],
@@ -230,6 +240,11 @@ public:
       typescript: `function carFleet(target: number, position: number[], speed: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int carFleet(int target, int[] position, int[] speed) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int carFleet(int target, vector<int>& position, vector<int>& speed) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int carFleet(int target, List<int> position, List<int> speed) {
+    
+  }
+}`,
     },
     methodName: "carFleet",
     argTypes: ["int", "int[]", "int[]"],

@@ -23,7 +23,7 @@ export type InputType =
   | "graph" // undirected graph given as 1-indexed adjacency list
   | "void"; // only valid as outputType: the function mutates its first argument
 
-export type LanguageId = "python" | "javascript" | "typescript" | "java" | "cpp";
+export type LanguageId = "python" | "javascript" | "typescript" | "java" | "cpp" | "dart";
 
 export interface TestCase {
   args: unknown[];
@@ -61,6 +61,7 @@ export interface ProblemStarter {
   typescript: string;
   java: string;
   cpp: string;
+  dart?: string;
 }
 
 export interface EditorialCode {
@@ -69,6 +70,7 @@ export interface EditorialCode {
   typescript?: string;
   java?: string;
   cpp?: string;
+  dart?: string;
 }
 
 export interface Problem {

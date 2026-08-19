@@ -20,6 +20,11 @@ export const intervalsProblems: Problem[] = [
       typescript: `function merge(intervals: number[][]): number[][] {\n    \n}`,
       java: `class Solution {\n    public int[][] merge(int[][] intervals) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> merge(vector<vector<int>>& intervals) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> merge(List<List<int>> intervals) {
+    
+  }
+}`,
     },
     methodName: "merge",
     argTypes: ["int[][]"],
@@ -125,6 +130,11 @@ Insert \`newInterval\` into \`intervals\` such that \`intervals\` is still sorte
       typescript: `function insert(intervals: number[][], newInterval: number[]): number[][] {\n    \n}`,
       java: `class Solution {\n    public int[][] insert(int[][] intervals, int[] newInterval) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> insert(List<List<int>> intervals, List<int> newInterval) {
+    
+  }
+}`,
     },
     methodName: "insert",
     argTypes: ["int[][]", "int[]"],
@@ -244,6 +254,11 @@ public:
       typescript: `function minMeetingRooms(intervals: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int minMeetingRooms(int[][] intervals) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minMeetingRooms(vector<vector<int>>& intervals) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int minMeetingRooms(List<List<int>> intervals) {
+    
+  }
+}`,
     },
     methodName: "minMeetingRooms",
     argTypes: ["int[][]"],

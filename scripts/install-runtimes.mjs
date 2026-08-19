@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Auto-installer script for Algo Arena judge runtimes (Python, Deno, Java, C++).
+ * Auto-installer script for Algo Arena judge runtimes (Python, Deno, Java, C++, Dart).
  *
  * Usage:
  *   node scripts/install-runtimes.mjs
@@ -42,7 +42,7 @@ async function main() {
   const missing = RUNTIME_LABELS.filter((r) => !found[r.key]);
 
   if (missing.length === 0) {
-    log("✓ All judge runtimes (Python, Deno, Java, C++) are already installed!");
+    log("✓ All judge runtimes (Python, Deno, Java, C++, Dart) are already installed!");
     process.exit(0);
   }
 
@@ -106,6 +106,24 @@ async function installWindows(missing) {
         } catch (err) {
           console.error("[install-runtimes] PowerShell Deno install failed:", err.message);
         }
+      }
+    } else if (item.key === "dart") {
+      if (hasWinget) {
+        try {
+          await run("winget", [
+            "install",
+            "--id",
+            "DartLang.Dart",
+            "--accept-source-agreements",
+            "--accept-package-agreements",
+          ]);
+          installed = true;
+        } catch (err) {
+          log(`winget failed for Dart (${err.message}). Please install manually from https://dart.dev/get-dart.`);
+        }
+      }
+      if (!installed) {
+        log("Please install Dart SDK manually from https://dart.dev/get-dart (check 'Add to PATH').");
       }
     } else if (item.key === "gpp") {
       if (hasWinget) {
@@ -189,6 +207,7 @@ async function installMac(missing) {
     if (item.key === "deno") brewPackages.push("deno");
     if (item.key === "gpp") brewPackages.push("gcc");
     if (item.key === "javac") brewPackages.push("openjdk");
+    if (item.key === "dart") brewPackages.push("dart");
   }
 
   if (brewPackages.length > 0) {
@@ -200,12 +219,14 @@ async function installMac(missing) {
 async function installLinux(missing) {
   const aptPackages = [];
   let needDeno = false;
+  let needDart = false;
 
   for (const item of missing) {
     if (item.key === "python") aptPackages.push("python3");
     if (item.key === "deno") needDeno = true;
     if (item.key === "gpp") aptPackages.push("g++");
     if (item.key === "javac") aptPackages.push("default-jdk");
+    if (item.key === "dart") needDart = true;
   }
 
   if (aptPackages.length > 0) {
@@ -217,6 +238,11 @@ async function installLinux(missing) {
   if (needDeno) {
     log("Installing Deno via official installer script…");
     await run("sh", ["-c", "curl -fsSL https://deno.land/install.sh | sh"]);
+  }
+
+  if (needDart) {
+    log("Installing Dart SDK via official installer…");
+    await run("sh", ["-c", "wget -qO- https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip > /tmp/dart-sdk.zip && sudo unzip -qo /tmp/dart-sdk.zip -d /usr/local && rm /tmp/dart-sdk.zip"]);
   }
 }
 

@@ -41,6 +41,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  TreeNode? invertTree(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "invertTree",
     argTypes: ["tree"],
@@ -145,6 +150,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int maxDepth(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "maxDepth",
     argTypes: ["tree"],
@@ -236,6 +246,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool isSameTree(TreeNode? p, TreeNode? q) {
+    
+  }
+}`,
     },
     methodName: "isSameTree",
     argTypes: ["tree", "tree"],
@@ -337,6 +352,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<List<int>> levelOrder(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "levelOrder",
     argTypes: ["tree"],
@@ -496,6 +516,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool isValidBST(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "isValidBST",
     argTypes: ["tree"],
@@ -612,6 +637,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int maxPathSum(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "maxPathSum",
     argTypes: ["tree"],

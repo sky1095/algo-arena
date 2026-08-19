@@ -20,6 +20,11 @@ export const treesExtra: Problem[] = [
       typescript: `function diameterOfBinaryTree(root: TreeNode | null): number {\n    \n}`,
       java: `class Solution {\n    public int diameterOfBinaryTree(TreeNode root) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int diameterOfBinaryTree(TreeNode* root) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int diameterOfBinaryTree(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "diameterOfBinaryTree",
     argTypes: ["tree"],
@@ -135,6 +140,11 @@ public:
       typescript: `function isBalanced(root: TreeNode | null): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean isBalanced(TreeNode root) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isBalanced(TreeNode* root) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool isBalanced(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "isBalanced",
     argTypes: ["tree"],
@@ -243,6 +253,11 @@ public:
       typescript: `function isSubtree(root: TreeNode | null, subRoot: TreeNode | null): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean isSubtree(TreeNode root, TreeNode subRoot) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isSubtree(TreeNode* root, TreeNode* subRoot) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool isSubtree(TreeNode? root, TreeNode? subRoot) {
+    
+  }
+}`,
     },
     methodName: "isSubtree",
     argTypes: ["tree", "tree"],
@@ -349,6 +364,11 @@ public:
       typescript: `function lowestCommonAncestor(root: TreeNode | null, p: TreeNode | null, q: TreeNode | null): TreeNode | null {\n    \n}`,
       java: `class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {\n        \n    }\n};`,
+      dart: `class Solution {
+  TreeNode? lowestCommonAncestor(TreeNode? root, TreeNode? p, TreeNode? q) {
+    
+  }
+}`,
     },
     methodName: "lowestCommonAncestor",
     argTypes: ["tree", "tree", "tree"],
@@ -441,6 +461,11 @@ public:
       typescript: `function rightSideView(root: TreeNode | null): number[] {\n    \n}`,
       java: `class Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> rightSideView(TreeNode* root) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> rightSideView(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "rightSideView",
     argTypes: ["tree"],
@@ -567,6 +592,11 @@ public:
       typescript: `function goodNodes(root: TreeNode | null): number {\n    \n}`,
       java: `class Solution {\n    public int goodNodes(TreeNode root) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int goodNodes(TreeNode* root) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int goodNodes(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "goodNodes",
     argTypes: ["tree"],
@@ -673,6 +703,11 @@ public:
       typescript: `function kthSmallest(root: TreeNode | null, k: number): number {\n    \n}`,
       java: `class Solution {\n    public int kthSmallest(TreeNode root, int k) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int kthSmallest(TreeNode* root, int k) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int kthSmallest(TreeNode? root, int k) {
+    
+  }
+}`,
     },
     methodName: "kthSmallest",
     argTypes: ["tree", "int"],
@@ -787,6 +822,11 @@ public:
       typescript: `function buildTree(preorder: number[], inorder: number[]): TreeNode | null {\n    \n}`,
       java: `class Solution {\n    public TreeNode buildTree(int[] preorder, int[] inorder) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {\n        \n    }\n};`,
+      dart: `class Solution {
+  TreeNode? buildTree(List<int> preorder, List<int> inorder) {
+    
+  }
+}`,
     },
     methodName: "buildTree",
     argTypes: ["int[]", "int[]"],
@@ -922,6 +962,11 @@ public:
       typescript: `class Codec {\n    serialize(root: TreeNode | null): string {\n        \n    }\n    \n    deserialize(data: string): TreeNode | null {\n        \n    }\n}`,
       java: `class Codec {\n    public String serialize(TreeNode root) {\n        \n    }\n    \n    public TreeNode deserialize(String data) {\n        \n    }\n}`,
       cpp: `class Codec {\npublic:\n    string serialize(TreeNode* root) {\n        \n    }\n    \n    TreeNode* deserialize(string data) {\n        \n    }\n};`,
+      dart: `class Solution {
+  String serialize(TreeNode? root) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],

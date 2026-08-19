@@ -4,7 +4,7 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
 
 - **150 curated problems** across **18 categories** (Arrays & Hash Tables → Bit Manipulation)
 - **Library archive**: every problem from a public open-source archive of classic problems (2,786 problems, 1 → 3,623). **1,752 of them are fully solvable** — auto-generated, judge-validated tests with a workspace in Python, JavaScript and TypeScript (the rest are view-only: tree/linked-list/design problems whose solutions can't be auto-tested)
-- **Real judge** that compiles and runs your code in **Python, JavaScript, TypeScript, Java, and C++** (local subprocesses — no external service)
+- **Real judge** that compiles and runs your code in **Python, JavaScript, TypeScript, Java, C++, and Dart** (local subprocesses — no external service)
 - **Monaco editor** (VS Code's editor) with syntax highlighting, served fully offline from `/public/vs`
 - **Run / Submit** with per-test results: expected vs. actual output, runtime errors, timeouts, and compile errors
 - **Editorial solutions** with approach explanations and time/space complexity for every problem
@@ -28,6 +28,7 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
    | JavaScript / TypeScript | `deno` (Node alone is not enough) |
    | Java | `javac` + `java` (a JDK) |
    | C++ | `g++` |
+   | Dart | `dart` (Dart SDK) |
 
    On **Windows**, Python accepts `python3`, `py`, or `python`, and C++ needs
    a MinGW `g++` on PATH. If a runtime is missing natively, the judge falls
@@ -38,7 +39,7 @@ A coding interview practice platform: a curated roadmap of classic algorithm pro
    report a compile error in the workspace console.
 
 **Zero-config option (recommended):** the Docker image bakes in Node 24 **and**
-every judge runtime, so all 5 languages work out of the box:
+every judge runtime, so all 6 languages work out of the box:
 
 ```bash
 docker compose up -d --build
@@ -59,7 +60,7 @@ Alternatives:
 ```bash
 npm run setup:prod      # build once, then serve (production mode)
 npm run setup:docker    # Docker image — every judge runtime included
-npm run setup:runtimes  # auto-install missing host runtimes (Python, Deno, Java, C++)
+npm run setup:runtimes  # auto-install missing host runtimes (Python, Deno, Java, C++, Dart)
 ```
 
 Or do it by hand: `npm install && npm run dev`, then open
@@ -121,7 +122,7 @@ docker compose up -d --build
 ```
 
 - Serves on `http://<your-host>:3000`.
-- The `Dockerfile` bakes in every judge runtime (Python, Deno for JS/TS, Java, C++), so all 5 languages work out of the box.
+- The `Dockerfile` bakes in every judge runtime (Python, Deno for JS/TS, Java, C++, Dart), so all 6 languages work out of the box.
 - Accounts (login only) live in a SQLite database at `./data/app.db` (mounted as a volume, so it survives rebuilds).
 - **User progress is never kept in a unified database**: each account gets its own JSON file at `data/progress/<userId>.json` — the same file their Export/Import moves around.
 - **Back up the `data/` directory** — it's the only state you have.
@@ -211,7 +212,7 @@ npm run setup
 ```
 
 - **2,936 problems** to practice with: a curated 150-problem interview roadmap plus a 2,786-problem archive
-- **5 languages** supported by the judge: Python, JavaScript, TypeScript, Java, and C++
+- **6 languages** supported by the judge: Python, JavaScript, TypeScript, Java, C++, and Dart
 - Every problem has editorial solutions with approach explanations and time/space complexity
 - Your progress (solved, attempts, streak) is saved per account — or export it as a JSON file from the Stats page and import it anywhere
 

@@ -21,6 +21,11 @@ export const binarySearchExtra: Problem[] = [
       typescript: `function findMin(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int findMin(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findMin(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int findMin(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "findMin",
     argTypes: ["int[]"],
@@ -118,6 +123,11 @@ public:
       typescript: `class TimeMap {\n    constructor() {\n        \n    }\n    \n    set(key: string, value: string, timestamp: number): void {\n        \n    }\n    \n    get(key: string, timestamp: number): string {\n        \n    }\n}`,
       java: `class TimeMap {\n    public TimeMap() {\n        \n    }\n    \n    public void set(String key, String value, int timestamp) {\n        \n    }\n    \n    public String get(String key, int timestamp) {\n        \n    }\n}`,
       cpp: `class TimeMap {\npublic:\n    TimeMap() {\n        \n    }\n    \n    void set(string key, string value, int timestamp) {\n        \n    }\n    \n    string get(string key, int timestamp) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void set(String key, String value, int timestamp) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -267,6 +277,11 @@ public:
       typescript: `function findMedianSortedArrays(nums1: number[], nums2: number[]): number {\n    \n}`,
       java: `class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {\n        \n    }\n};`,
+      dart: `class Solution {
+  double findMedianSortedArrays(List<int> nums1, List<int> nums2) {
+    
+  }
+}`,
     },
     methodName: "findMedianSortedArrays",
     argTypes: ["int[]", "int[]"],

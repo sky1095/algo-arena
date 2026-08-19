@@ -18,6 +18,8 @@ export interface JudgeRuntimes {
   javac?: string;
   /** g++ — C++ submissions. */
   gpp?: string;
+  /** dart — Dart submissions. */
+  dart?: string;
   /** True on Windows when the WSL2 launcher exists: a fallback toolchain for
    *  runtimes missing natively. */
   wsl?: boolean;
@@ -30,6 +32,7 @@ export function checkJudgeRuntimes(): JudgeRuntimes {
     deno: findOnPath("deno"),
     javac: findOnPath("javac"),
     gpp: findOnPath("g++"),
+    dart: findOnPath("dart"),
     wsl: isWin32() ? findOnPath("wsl") !== undefined : undefined,
   };
 }
@@ -46,6 +49,7 @@ export const RUNTIME_LABELS: {
   { lang: "JavaScript/TypeScript", key: "deno", bin: "deno", note: "Node alone is not enough" },
   { lang: "Java", key: "javac", bin: "javac", note: "also needs `java`" },
   { lang: "C++", key: "gpp", bin: "g++" },
+  { lang: "Dart", key: "dart", bin: "dart" },
 ];
 
 /** Human-readable judge status for the startup banner and the setup script. */

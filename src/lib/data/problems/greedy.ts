@@ -21,6 +21,11 @@ export const greedyProblems: Problem[] = [
       typescript: `function maxSubArray(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int maxSubArray(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxSubArray(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int maxSubArray(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "maxSubArray",
     argTypes: ["int[]"],
@@ -112,6 +117,11 @@ Return \`true\` if you can reach the last index, or \`false\` otherwise.`,
       typescript: `function canJump(nums: number[]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean canJump(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canJump(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool canJump(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "canJump",
     argTypes: ["int[]"],
@@ -205,6 +215,11 @@ Given two integer arrays \`gas\` and \`cost\`, return the starting gas station's
       typescript: `function canCompleteCircuit(gas: number[], cost: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int canCompleteCircuit(int[] gas, int[] cost) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int canCompleteCircuit(List<int> gas, List<int> cost) {
+    
+  }
+}`,
     },
     methodName: "canCompleteCircuit",
     argTypes: ["int[]", "int[]"],

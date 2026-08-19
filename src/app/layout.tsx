@@ -53,11 +53,11 @@ export default function RootLayout({
          */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var A="bis_skin_checked";function rm(n){try{n.removeAttribute(A)}catch(e){}}var all=document.querySelectorAll("["+A+"]");for(var i=0;i<all.length;i++)rm(all[i]);try{var P=Element.prototype,_sa=P.setAttribute;P.setAttribute=function(n,v){if(String(n).toLowerCase()===A)return;return _sa.apply(this,arguments)};var _san=P.setAttributeNS;P.setAttributeNS=function(ns,n,v){if(String(n).toLowerCase()===A)return;return _san.apply(this,arguments)}}catch(e){}new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var m=ms[j];if(m.type==="attributes"&&m.attributeName.toLowerCase()===A&&m.target&&m.target.nodeType===1)rm(m.target);var added=m.addedNodes;for(var k=0;k<added.length;k++){if(added[k].nodeType===1)rm(added[k])}}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:[A]});})();`,
+            __html: `(function(){var ATTRS=["bis_skin_checked","bis_register"];function strip(el){try{for(var i=0;i<ATTRS.length;i++)el.removeAttribute(ATTRS[i]);}catch(e){}}function clean(root){var all=root.querySelectorAll("*");for(var i=0;i<all.length;i++)strip(all[i]);}clean(document);try{var P=Element.prototype,sa=P.setAttribute,san=P.setAttributeNS;P.setAttribute=function(n,v){if(ATTRS.indexOf(String(n).toLowerCase())>=0)return;return sa.apply(this,arguments)};P.setAttributeNS=function(ns,n,v){if(ATTRS.indexOf(String(n).toLowerCase())>=0)return;return san.apply(this,arguments)}}catch(e){}new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var m=ms[j];if(m.type==="attributes"&&ATTRS.indexOf(m.attributeName)>=0&&m.target&&m.target.nodeType===1)strip(m.target);var added=m.addedNodes;for(var k=0;k<added.length;k++){if(added[k].nodeType===1)strip(added[k])}}}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:ATTRS});})();`,
           }}
         />
       </head>
-      <body className="flex min-h-full flex-col font-sans">
+      <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
         <TitleBar />
         <PWARegister />
         <ThemeProvider

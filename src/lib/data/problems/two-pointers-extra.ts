@@ -38,6 +38,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int trap(List<int> height) {
+    
+  }
+}`,
     },
     methodName: "trap",
     argTypes: ["int[]"],

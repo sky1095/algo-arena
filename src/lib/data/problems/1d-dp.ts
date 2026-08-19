@@ -22,6 +22,11 @@ Each time you can either climb \`1\` or \`2\` steps. In how many distinct ways c
       typescript: `function climbStairs(n: number): number {\n    \n}`,
       java: `class Solution {\n    public int climbStairs(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int climbStairs(int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int climbStairs(int n) {
+    
+  }
+}`,
     },
     methodName: "climbStairs",
     argTypes: ["int"],
@@ -116,6 +121,11 @@ Given an integer array \`nums\` representing the amount of money of each house, 
       typescript: `function rob(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int rob(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int rob(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int rob(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "rob",
     argTypes: ["int[]"],
@@ -208,6 +218,11 @@ You may assume that you have an **infinite** number of each kind of coin.`,
       typescript: `function coinChange(coins: number[], amount: number): number {\n    \n}`,
       java: `class Solution {\n    public int coinChange(int[] coins, int amount) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int coinChange(vector<int>& coins, int amount) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int coinChange(List<int> coins, int amount) {
+    
+  }
+}`,
     },
     methodName: "coinChange",
     argTypes: ["int[]", "int"],
@@ -309,6 +324,11 @@ public:
       typescript: `function lengthOfLIS(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int lengthOfLIS(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int lengthOfLIS(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int lengthOfLIS(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "lengthOfLIS",
     argTypes: ["int[]"],

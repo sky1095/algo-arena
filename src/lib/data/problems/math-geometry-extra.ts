@@ -21,6 +21,11 @@ export const mathGeometryExtra: Problem[] = [
       typescript: `function rotate(matrix: number[][]): void {\n    \n}`,
       java: `class Solution {\n    public void rotate(int[][] matrix) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void rotate(vector<vector<int>>& matrix) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void rotate(List<List<int>> matrix) {
+    
+  }
+}`,
     },
     methodName: "rotate",
     argTypes: ["int[][]"],
@@ -120,6 +125,11 @@ public:
       typescript: `function spiralOrder(matrix: number[][]): number[] {\n    \n}`,
       java: `class Solution {\n    public List<Integer> spiralOrder(int[][] matrix) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> spiralOrder(vector<vector<int>>& matrix) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> spiralOrder(List<List<int>> matrix) {
+    
+  }
+}`,
     },
     methodName: "spiralOrder",
     argTypes: ["int[][]"],
@@ -271,6 +281,11 @@ public:
       typescript: `function setZeroes(matrix: number[][]): void {\n    \n}`,
       java: `class Solution {\n    public void setZeroes(int[][] matrix) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void setZeroes(vector<vector<int>>& matrix) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void setZeroes(List<List<int>> matrix) {
+    
+  }
+}`,
     },
     methodName: "setZeroes",
     argTypes: ["int[][]"],
@@ -422,6 +437,11 @@ public:
       typescript: `function multiply(num1: string, num2: string): string {\n    \n}`,
       java: `class Solution {\n    public String multiply(String num1, String num2) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    string multiply(string num1, string num2) {\n        \n    }\n};`,
+      dart: `class Solution {
+  String multiply(String num1, String num2) {
+    
+  }
+}`,
     },
     methodName: "multiply",
     argTypes: ["string", "string"],
@@ -556,6 +576,11 @@ public:
       typescript: `class DetectSquares {\n    constructor() {\n        \n    }\n    \n    add(point: number[]): void {\n        \n    }\n    \n    count(point: number[]): number {\n        \n    }\n}`,
       java: `class DetectSquares {\n    public DetectSquares() {\n        \n    }\n    \n    public void add(int[] point) {\n        \n    }\n    \n    public int count(int[] point) {\n        \n    }\n}`,
       cpp: `class DetectSquares {\npublic:\n    DetectSquares() {\n        \n    }\n    \n    void add(vector<int> point) {\n        \n    }\n    \n    int count(vector<int> point) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void add(List<int> point) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],

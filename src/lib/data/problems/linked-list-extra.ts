@@ -21,6 +21,11 @@ export const linkedListExtra: Problem[] = [
       typescript: `function removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {\n    \n}`,
       java: `class Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* removeNthFromEnd(ListNode* head, int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  ListNode? removeNthFromEnd(ListNode? head, int n) {
+    
+  }
+}`,
     },
     methodName: "removeNthFromEnd",
     argTypes: ["linked", "int"],
@@ -130,6 +135,11 @@ public:
       typescript: `function copyRandomList(head: RandomListNode | null): RandomListNode | null {\n    \n}`,
       java: `class Solution {\n    public RandomListNode copyRandomList(RandomListNode head) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    RandomListNode* copyRandomList(RandomListNode* head) {\n        \n    }\n};`,
+      dart: `class Solution {
+  RandomListNode? copyRandomList(RandomListNode? head) {
+    
+  }
+}`,
     },
     methodName: "copyRandomList",
     argTypes: ["randomLinked"],
@@ -256,6 +266,11 @@ public:
       typescript: `function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {\n    \n}`,
       java: `class Solution {\n    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {\n        \n    }\n};`,
+      dart: `class Solution {
+  ListNode? addTwoNumbers(ListNode? l1, ListNode? l2) {
+    
+  }
+}`,
     },
     methodName: "addTwoNumbers",
     argTypes: ["linked", "linked"],
@@ -374,6 +389,11 @@ public:
       typescript: `function findDuplicate(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int findDuplicate(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findDuplicate(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int findDuplicate(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "findDuplicate",
     argTypes: ["int[]"],
@@ -490,6 +510,11 @@ public:
       typescript: `class LRUCache {\n    constructor(capacity: number) {\n        \n    }\n    \n    get(key: number): number {\n        \n    }\n    \n    put(key: number, value: number): void {\n        \n    }\n}`,
       java: `class LRUCache {\n    public LRUCache(int capacity) {\n        \n    }\n    \n    public int get(int key) {\n        \n    }\n    \n    public void put(int key, int value) {\n        \n    }\n}`,
       cpp: `class LRUCache {\npublic:\n    LRUCache(int capacity) {\n        \n    }\n    \n    int get(int key) {\n        \n    }\n    \n    void put(int key, int value) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int get(int key) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -653,6 +678,11 @@ public:
       typescript: `function mergeKLists(lists: (ListNode | null)[]): ListNode | null {\n    \n}`,
       java: `class Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* mergeKLists(vector<ListNode*>& lists) {\n        \n    }\n};`,
+      dart: `class Solution {
+  ListNode? mergeKLists(ListNode?[] lists) {
+    
+  }
+}`,
     },
     methodName: "mergeKLists",
     argTypes: ["linked[]"],
@@ -832,6 +862,11 @@ public:
       typescript: `function reverseKGroup(head: ListNode | null, k: number): ListNode | null {\n    \n}`,
       java: `class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* reverseKGroup(ListNode* head, int k) {\n        \n    }\n};`,
+      dart: `class Solution {
+  ListNode? reverseKGroup(ListNode? head, int k) {
+    
+  }
+}`,
     },
     methodName: "reverseKGroup",
     argTypes: ["linked", "int"],

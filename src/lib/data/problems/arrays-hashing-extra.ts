@@ -69,6 +69,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool isValidSudoku(List<String>[] board) {
+    
+  }
+}`,
     },
     methodName: "isValidSudoku",
     argTypes: ["char[][]"],
@@ -339,6 +344,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  String encode(List<String> strs) {
+    
+  }
+}`,
     },
     methodName: "encode",
     argTypes: ["string[]"],
@@ -482,6 +492,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int longestConsecutive(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "longestConsecutive",
     argTypes: ["int[]"],

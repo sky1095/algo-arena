@@ -30,6 +30,11 @@ The grid is given as an array of strings like \`["11000", "11000", "00100", "000
       typescript: `function numIslands(grid: string[][]): number {\n    \n}`,
       java: `class Solution {\n    public int numIslands(char[][] grid) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numIslands(vector<vector<char>>& grid) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int numIslands(List<String>[] grid) {
+    
+  }
+}`,
     },
     methodName: "numIslands",
     argTypes: ["char[][]"],
@@ -194,6 +199,11 @@ Each node in the graph contains a value (\`int\`) and a list (\`List[Node]\`) of
       typescript: `function cloneGraph(node: Node | null): Node | null {\n    \n}`,
       java: `class Solution {\n    public Node cloneGraph(Node node) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    Node* cloneGraph(Node* node) {\n        \n    }\n};`,
+      dart: `class Solution {
+  Node? cloneGraph(Node? node) {
+    
+  }
+}`,
     },
     methodName: "cloneGraph",
     argTypes: ["graph"],
@@ -324,6 +334,11 @@ The board is given as an array of strings like \`["XXXX", "XOOX", "XXOX", "XOXX"
       typescript: `function solve(board: string[][]): void {\n    \n}`,
       java: `class Solution {\n    public void solve(char[][] board) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void solve(vector<vector<char>>& board) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void solve(List<String>[] board) {
+    
+  }
+}`,
     },
     methodName: "solve",
     argTypes: ["char[][]"],
@@ -496,6 +511,11 @@ Return the minimum number of minutes that must elapse until no cell has a fresh 
       typescript: `function orangesRotting(grid: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int orangesRotting(int[][] grid) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int orangesRotting(vector<vector<int>>& grid) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int orangesRotting(List<List<int>> grid) {
+    
+  }
+}`,
     },
     methodName: "orangesRotting",
     argTypes: ["int[][]"],

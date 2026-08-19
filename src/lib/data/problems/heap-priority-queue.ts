@@ -71,6 +71,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int add(int val) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -302,6 +307,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int lastStoneWeight(List<int> stones) {
+    
+  }
+}`,
     },
     methodName: "lastStoneWeight",
     argTypes: ["int[]"],
@@ -419,6 +429,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<List<int>> kClosest(List<List<int>> points, int k) {
+    
+  }
+}`,
     },
     methodName: "kClosest",
     argTypes: ["int[][]", "int"],

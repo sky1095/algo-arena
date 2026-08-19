@@ -2,7 +2,7 @@
 
 # Algo Arena — self-hosted build.
 # The image bakes in every runtime the judge needs (Python, Deno for JS/TS,
-# Java, C++), so all 5 languages work out of the box.
+# Java, C++, Dart), so all 6 languages work out of the box.
 
 FROM node:24-slim AS base
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -31,7 +31,11 @@ RUN apt-get update \
         openjdk-17-jdk-headless \
         curl \
         unzip \
+        wget \
     && curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh -s -- --yes \
+    && wget -qO- https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip > /tmp/dart-sdk.zip \
+    && unzip -qo /tmp/dart-sdk.zip -d /usr/local \
+    && rm /tmp/dart-sdk.zip \
     && rm -rf /var/lib/apt/lists/* \
     # Dedicated unprivileged user for judge processes: submissions run as
     # `judge` (never root), so they cannot read /app/data or anything else.

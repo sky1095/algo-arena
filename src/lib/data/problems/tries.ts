@@ -108,6 +108,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  void insert(String word) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -424,6 +429,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  void addWord(String word) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -675,6 +685,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<String> findWords(List<String>[] board, List<String> words) {
+    
+  }
+}`,
     },
     methodName: "findWords",
     argTypes: ["char[][]", "string[]"],

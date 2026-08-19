@@ -39,6 +39,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool containsDuplicate(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "containsDuplicate",
     argTypes: ["int[]"],
@@ -106,6 +111,13 @@ public:
         return false;
     }
 };`,
+        dart: `bool containsDuplicate(List<int> nums) {
+  final seen = <int>{};
+  for (final n in nums) {
+    if (!seen.add(n)) return true;
+  }
+  return false;
+}`,
       },
     },
   },
@@ -145,6 +157,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool isAnagram(String s, String t) {
+    
+  }
+}`,
     },
     methodName: "isAnagram",
     argTypes: ["string", "string"],
@@ -214,13 +231,22 @@ Count the frequency of each character in \`s\`, then decrement the counts as we 
         cpp: `class Solution {
 public:
     bool isAnagram(string s, string t) {
-        if (s.size() != t.size()) return false;
+        if (s.length() != t.size()) return false;
         int cnt[26] = {};
         for (char c : s) cnt[c - 'a']++;
         for (char c : t) if (--cnt[c - 'a'] < 0) return false;
         return true;
     }
 };`,
+        dart: `bool isAnagram(String s, String t) {
+  if (s.length != t.length) return false;
+  final cnt = List.filled(26, 0);
+  for (final c in s.codeUnits) cnt[c - 97]++;
+  for (final c in t.codeUnits) {
+    if (--cnt[c - 97] < 0) return false;
+  }
+  return true;
+}`,
       },
     },
   },
@@ -264,6 +290,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<int> twoSum(List<int> nums, int target) {
+    
+  }
+}`,
     },
     methodName: "twoSum",
     argTypes: ["int[]", "int"],
@@ -338,6 +369,15 @@ public:
         return {};
     }
 };`,
+        dart: `List<int> twoSum(List<int> nums, int target) {
+  final seen = <int, int>{};
+  for (var i = 0; i < nums.length; i++) {
+    final need = target - nums[i];
+    if (seen.containsKey(need)) return [seen[need]!, i];
+    seen[nums[i]] = i;
+  }
+  return [];
+}`,
       },
     },
   },
@@ -385,6 +425,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<List<String>> groupAnagrams(List<String> strs) {
+    
+  }
+}`,
     },
     methodName: "groupAnagrams",
     argTypes: ["string[]"],
@@ -460,6 +505,15 @@ public:
         return res;
     }
 };`,
+        dart: `List<List<String>> groupAnagrams(List<String> strs) {
+  final groups = <String, List<String>>{};
+  for (final s in strs) {
+    final chars = s.split('')..sort();
+    final key = chars.join();
+    groups.putIfAbsent(key, () => []).add(s);
+  }
+  return groups.values.toList();
+}`,
       },
     },
   },
@@ -500,6 +554,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<int> topKFrequent(List<int> nums, int k) {
+    
+  }
+}`,
     },
     methodName: "topKFrequent",
     argTypes: ["int[]", "int"],
@@ -599,6 +658,15 @@ public:
         return res;
     }
 };`,
+        dart: `List<int> topKFrequent(List<int> nums, int k) {
+  final counts = <int, int>{};
+  for (final n in nums) {
+    counts[n] = (counts[n] ?? 0) + 1;
+  }
+  final entries = counts.entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
+  return entries.sublist(0, k).map((e) => e.key).toList();
+}`,
       },
     },
   },
@@ -641,6 +709,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<int> productExceptSelf(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "productExceptSelf",
     argTypes: ["int[]"],
@@ -735,6 +808,19 @@ public:
         return res;
     }
 };`,
+        dart: `List<int> productExceptSelf(List<int> nums) {
+  final n = nums.length;
+  final res = List.filled(n, 1);
+  for (var i = 1; i < n; i++) {
+    res[i] = res[i - 1] * nums[i - 1];
+  }
+  var right = 1;
+  for (var i = n - 1; i >= 0; i--) {
+    res[i] *= right;
+    right *= nums[i];
+  }
+  return res;
+}`,
       },
     },
   },

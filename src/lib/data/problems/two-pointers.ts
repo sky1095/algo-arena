@@ -38,6 +38,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool isPalindrome(String s) {
+    
+  }
+}`,
     },
     methodName: "isPalindrome",
     argTypes: ["string"],
@@ -162,6 +167,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<int> twoSum(List<int> numbers, int target) {
+    
+  }
+}`,
     },
     methodName: "twoSum",
     argTypes: ["int[]", "int"],
@@ -284,6 +294,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<List<int>> threeSum(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "threeSum",
     argTypes: ["int[]"],
@@ -454,6 +469,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  int maxArea(List<int> height) {
+    
+  }
+}`,
     },
     methodName: "maxArea",
     argTypes: ["int[]"],

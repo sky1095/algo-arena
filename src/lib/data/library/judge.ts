@@ -39,15 +39,31 @@ const PY_RET: Record<string, string> = {
   double: "float",
   bool: "bool",
   string: "str",
-  "int[]": "List[int]",
-  "double[]": "List[float]",
-  "bool[]": "List[bool]",
-  "string[]": "List[str]",
-  "int[][]": "List[List[int]]",
-  "string[][]": "List[List[str]]",
-  "char[]": "List[str]",
-  "char[][]": "List[List[str]]",
+  "int[]": "List<int>",
+  "double[]": "List<double>",
+  "bool[]": "List<bool>",
+  "string[]": "List<String>",
+  "int[][]": "List<List<int>>",
+  "string[][]": "List<List<String>>",
+  "char[]": "List<String>",
+  "char[][]": "List<List<String>>",
   void: "None",
+};
+
+const DART_RET: Record<string, string> = {
+  int: "int",
+  double: "double",
+  bool: "bool",
+  string: "String",
+  "int[]": "List<int>",
+  "double[]": "List<double>",
+  "bool[]": "List<bool>",
+  "string[]": "List<String>",
+  "int[][]": "List<List<int>>",
+  "string[][]": "List<List<String>>",
+  "char[]": "List<String>",
+  "char[][]": "List<List<String>>",
+  void: "void",
 };
 
 function makeStarter(entry: LibraryJudgeEntry) {
@@ -61,12 +77,18 @@ function makeStarter(entry: LibraryJudgeEntry) {
   const pyRet = PY_RET[entry.outputType] ?? "Any";
   const tsRet = TS_RET[entry.outputType] ?? "any";
 
+  const dartTyped = entry.paramNames
+    .map((n, i) => `${n}: ${DART_RET[entry.argTypes[i]] ?? 'dynamic'}`)
+    .join(", ");
+  const dartRet = DART_RET[entry.outputType] ?? 'dynamic';
+
   return {
     python: `from typing import List, Optional\n\n\ndef ${entry.methodName}(${pyTyped}) -> ${pyRet}:\n    pass\n`,
     javascript: `function ${entry.methodName}(${args}) {\n    \n}\n`,
     typescript: `function ${entry.methodName}(${tsTyped}): ${tsRet} {\n    \n}\n`,
     java: "",
     cpp: "",
+    dart: `class Solution {\n  ${dartRet} ${entry.methodName}(${dartTyped}) {\n    \n  }\n}`,
   };
 }
 

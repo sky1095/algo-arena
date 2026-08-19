@@ -23,6 +23,11 @@ You must implement a solution with a linear runtime complexity and use only cons
       typescript: `function singleNumber(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int singleNumber(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int singleNumber(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int singleNumber(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "singleNumber",
     argTypes: ["int[]"],
@@ -101,6 +106,11 @@ The input is given as a non-negative integer \`n\` (the test cases interpret it 
       typescript: `function hammingWeight(n: number): number {\n    \n}`,
       java: `class Solution {\n    public int hammingWeight(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int hammingWeight(int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int hammingWeight(int n) {
+    
+  }
+}`,
     },
     methodName: "hammingWeight",
     argTypes: ["int"],
@@ -189,6 +199,11 @@ public:
       typescript: `function countBits(n: number): number[] {\n    \n}`,
       java: `class Solution {\n    public int[] countBits(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> countBits(int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> countBits(int n) {
+    
+  }
+}`,
     },
     methodName: "countBits",
     argTypes: ["int"],

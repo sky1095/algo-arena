@@ -27,6 +27,11 @@ Return \`true\` if \`n\` is a happy number, and \`false\` if not.`,
       typescript: `function isHappy(n: number): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean isHappy(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isHappy(int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool isHappy(int n) {
+    
+  }
+}`,
     },
     methodName: "isHappy",
     argTypes: ["int"],
@@ -128,6 +133,11 @@ Increment the large integer by one and return the resulting array of digits.`,
       typescript: `function plusOne(digits: number[]): number[] {\n    \n}`,
       java: `class Solution {\n    public int[] plusOne(int[] digits) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> plusOne(vector<int>& digits) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> plusOne(List<int> digits) {
+    
+  }
+}`,
     },
     methodName: "plusOne",
     argTypes: ["int[]"],
@@ -230,6 +240,11 @@ public:
       typescript: `function myPow(x: number, n: number): number {\n    \n}`,
       java: `class Solution {\n    public double myPow(double x, int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    double myPow(double x, int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  double myPow(double x, int n) {
+    
+  }
+}`,
     },
     methodName: "myPow",
     argTypes: ["double", "int"],

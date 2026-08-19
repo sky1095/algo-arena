@@ -21,6 +21,11 @@ export const greedyExtra: Problem[] = [
       typescript: `function jump(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int jump(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int jump(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int jump(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "jump",
     argTypes: ["int[]"],
@@ -124,6 +129,11 @@ public:
       typescript: `function isNStraightHand(hand: number[], groupSize: number): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean isNStraightHand(int[] hand, int groupSize) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isNStraightHand(vector<int>& hand, int groupSize) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool isNStraightHand(List<int> hand, int groupSize) {
+    
+  }
+}`,
     },
     methodName: "isNStraightHand",
     argTypes: ["int[]", "int"],
@@ -249,6 +259,11 @@ public:
       typescript: `function mergeTriplets(triplets: number[][], target: number[]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean mergeTriplets(int[][] triplets, int[] target) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool mergeTriplets(vector<vector<int>>& triplets, vector<int>& target) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool mergeTriplets(List<List<int>> triplets, List<int> target) {
+    
+  }
+}`,
     },
     methodName: "mergeTriplets",
     argTypes: ["int[][]", "int[]"],
@@ -354,6 +369,11 @@ public:
       typescript: `function partitionLabels(s: string): number[] {\n    \n}`,
       java: `class Solution {\n    public List<Integer> partitionLabels(String s) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> partitionLabels(string s) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> partitionLabels(String s) {
+    
+  }
+}`,
     },
     methodName: "partitionLabels",
     argTypes: ["string"],
@@ -474,6 +494,11 @@ public:
       typescript: `function checkValidString(s: string): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean checkValidString(String s) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool checkValidString(string s) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool checkValidString(String s) {
+    
+  }
+}`,
     },
     methodName: "checkValidString",
     argTypes: ["string"],

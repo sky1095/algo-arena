@@ -22,6 +22,11 @@ Given the two integers \`m\` and \`n\`, return the number of possible unique pat
       typescript: `function uniquePaths(m: number, n: number): number {\n    \n}`,
       java: `class Solution {\n    public int uniquePaths(int m, int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int uniquePaths(int m, int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int uniquePaths(int m, int n) {
+    
+  }
+}`,
     },
     methodName: "uniquePaths",
     argTypes: ["int", "int"],
@@ -114,6 +119,11 @@ A **subsequence** of a string is a new string generated from the original string
       typescript: `function longestCommonSubsequence(text1: string, text2: string): number {\n    \n}`,
       java: `class Solution {\n    public int longestCommonSubsequence(String text1, String text2) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int longestCommonSubsequence(string text1, string text2) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int longestCommonSubsequence(String text1, String text2) {
+    
+  }
+}`,
     },
     methodName: "longestCommonSubsequence",
     argTypes: ["string", "string"],
@@ -234,6 +244,11 @@ Note that the same word in the dictionary may be reused multiple times in the se
       typescript: `function wordBreak(s: string, wordDict: string[]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean wordBreak(String s, String[] wordDict) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool wordBreak(string s, vector<string>& wordDict) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool wordBreak(String s, List<String> wordDict) {
+    
+  }
+}`,
     },
     methodName: "wordBreak",
     argTypes: ["string", "string[]"],

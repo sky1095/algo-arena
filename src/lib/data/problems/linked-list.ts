@@ -41,6 +41,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  ListNode? reverseList(ListNode? head) {
+    
+  }
+}`,
     },
     methodName: "reverseList",
     argTypes: ["linked"],
@@ -162,6 +167,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  ListNode? mergeTwoLists(ListNode? list1, ListNode? list2) {
+    
+  }
+}`,
     },
     methodName: "mergeTwoLists",
     argTypes: ["linked", "linked"],
@@ -312,6 +322,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool hasCycle(ListNode? head) {
+    
+  }
+}`,
     },
     methodName: "hasCycle",
     argTypes: ["cycle"],
@@ -435,6 +450,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  ListNode? reorderList(ListNode? head) {
+    
+  }
+}`,
     },
     methodName: "reorderList",
     argTypes: ["linked"],

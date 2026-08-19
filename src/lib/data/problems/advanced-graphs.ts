@@ -24,6 +24,11 @@ Return \`true\` if you can finish all courses, or \`false\` otherwise.`,
       typescript: `function canFinish(numCourses: number, prerequisites: number[][]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool canFinish(int numCourses, List<List<int>> prerequisites) {
+    
+  }
+}`,
     },
     methodName: "canFinish",
     argTypes: ["int", "int[][]"],
@@ -172,6 +177,11 @@ Return the number of **connected components** in the graph.`,
       typescript: `function countComponents(n: number, edges: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int countComponents(int n, int[][] edges) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int countComponents(int n, vector<vector<int>>& edges) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int countComponents(int n, List<List<int>> edges) {
+    
+  }
+}`,
     },
     methodName: "countComponents",
     argTypes: ["int", "int[][]"],

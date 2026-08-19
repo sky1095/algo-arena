@@ -203,7 +203,7 @@ let wslBinsPromise: Promise<Set<string>> | null = null;
 
 function wslAvailableBins(): Promise<Set<string>> {
   wslBinsPromise ??= new Promise((resolve) => {
-    const wanted = ["python3", "deno", "javac", "java", "g++"];
+    const wanted = ["python3", "deno", "javac", "java", "g++", "dart"];
     const child = spawn("wsl.exe", ["bash", "-lc", `command -v ${wanted.join(" ")}`], {
       stdio: ["ignore", "pipe", "pipe"],
       detached: true,

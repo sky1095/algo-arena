@@ -22,6 +22,11 @@ export const intervalsExtra: Problem[] = [
       typescript: `function eraseOverlapIntervals(intervals: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int eraseOverlapIntervals(int[][] intervals) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int eraseOverlapIntervals(vector<vector<int>>& intervals) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int eraseOverlapIntervals(List<List<int>> intervals) {
+    
+  }
+}`,
     },
     methodName: "eraseOverlapIntervals",
     argTypes: ["int[][]"],
@@ -121,6 +126,11 @@ public:
       typescript: `function canAttendMeetings(intervals: number[][]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean canAttendMeetings(int[][] intervals) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canAttendMeetings(vector<vector<int>>& intervals) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool canAttendMeetings(List<List<int>> intervals) {
+    
+  }
+}`,
     },
     methodName: "canAttendMeetings",
     argTypes: ["int[][]"],
@@ -204,6 +214,11 @@ public:
       typescript: `function minInterval(intervals: number[][], queries: number[]): number[] {\n    \n}`,
       java: `class Solution {\n    public int[] minInterval(int[][] intervals, int[] queries) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> minInterval(vector<vector<int>>& intervals, vector<int>& queries) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<int> minInterval(List<List<int>> intervals, List<int> queries) {
+    
+  }
+}`,
     },
     methodName: "minInterval",
     argTypes: ["int[][]", "int[]"],

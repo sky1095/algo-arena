@@ -1033,6 +1033,244 @@ const CPP_MAIN_END = `  return 0;
 `;
 
 /* ------------------------------------------------------------------ */
+/* Dart harness (JSON on stdin, like Python / JS)                      */
+/* ------------------------------------------------------------------ */
+
+const DART_PRELUDE = `import 'dart:convert';
+import 'dart:io';
+import 'dart:collection';
+
+class TreeNode {
+  int val;
+  TreeNode? left;
+  TreeNode? right;
+  TreeNode([this.val = 0, this.left, this.right]);
+}
+
+class ListNode {
+  int val;
+  ListNode? next;
+  ListNode([this.val = 0, this.next]);
+}
+
+class RandomListNode {
+  int val;
+  RandomListNode? next;
+  RandomListNode? random;
+  RandomListNode([this.val = 0, this.next, this.random]);
+}
+
+class Node {
+  int val;
+  List<Node> neighbors;
+  Node([this.val = 0, List<Node>? neighbors]) : neighbors = neighbors ?? [];
+}
+
+TreeNode? _listToTree(List<dynamic>? arr) {
+  if (arr == null || arr.isEmpty) return null;
+  var root = TreeNode(arr[0] as int);
+  var q = Queue<TreeNode>()..add(root);
+  var i = 1;
+  while (q.isNotEmpty && i < arr.length) {
+    var node = q.removeFirst();
+    if (i < arr.length && arr[i] != null) {
+      node.left = TreeNode(arr[i] as int);
+      q.add(node.left!);
+    }
+    i++;
+    if (i < arr.length && arr[i] != null) {
+      node.right = TreeNode(arr[i] as int);
+      q.add(node.right!);
+    }
+    i++;
+  }
+  return root;
+}
+
+List<dynamic>? _treeToList(TreeNode? root) {
+  if (root == null) return null;
+  var out = <dynamic>[];
+  var q = Queue<TreeNode?>()..add(root);
+  while (q.isNotEmpty) {
+    var n = q.removeFirst();
+    if (n == null) { out.add(null); continue; }
+    out.add(n.val);
+    q.add(n.left);
+    q.add(n.right);
+  }
+  while (out.isNotEmpty && out.last == null) out.removeLast();
+  return out;
+}
+
+ListNode? _listToNode(List<dynamic> arr) {
+  var dummy = ListNode();
+  var cur = dummy;
+  for (var v in arr) {
+    cur.next = ListNode(v as int);
+    cur = cur.next!;
+  }
+  return dummy.next;
+}
+
+List<int> _nodeToList(ListNode? head) {
+  var out = <int>[];
+  while (head != null) {
+    out.add(head.val);
+    head = head.next;
+  }
+  return out;
+}
+
+ListNode? _listToCycle(List<dynamic> data) {
+  var values = (data[0] as List).cast<int>();
+  var pos = data[1] as int;
+  var head = _listToNode(values);
+  if (pos >= 0 && head != null) {
+    var tail = head;
+    while (tail.next != null) tail = tail.next!;
+    var target = head;
+    for (var i = 0; i < pos; i++) target = target.next!;
+    tail.next = target;
+  }
+  return head;
+}
+
+RandomListNode? _listToRandom(List<dynamic> data) {
+  if (data.isEmpty) return null;
+  var nodes = data.map((p) => RandomListNode((p as List)[0] as int)).toList();
+  for (var i = 0; i < data.length; i++) {
+    var p = data[i] as List;
+    if (i + 1 < nodes.length) nodes[i].next = nodes[i + 1];
+    if (p[1] != null) nodes[i].random = nodes[p[1] as int];
+  }
+  return nodes[0];
+}
+
+List<dynamic>? _randomToList(RandomListNode? head) {
+  if (head == null) return null;
+  var nodeToIdx = <RandomListNode, int>{};
+  var cur = head;
+  var idx = 0;
+  while (cur != null) { nodeToIdx[cur] = idx++; cur = cur.next!; }
+  var out = <dynamic>[];
+  cur = head;
+  while (cur != null) {
+    out.add([cur.val, cur.random != null ? nodeToIdx[cur.random] : null]);
+    cur = cur.next!;
+  }
+  return out;
+}
+
+List<ListNode?> _listToNodeArray(List<dynamic> data) {
+  return data.map((arr) => arr != null ? _listToNode(arr as List) : null).toList();
+}
+
+Node? _adjToGraph(List<dynamic> adj) {
+  if (adj.isEmpty) return null;
+  var nodes = [for (var i = 0; i < adj.length; i++) Node(i + 1)];
+  for (var i = 0; i < adj.length; i++) {
+    for (var j in (adj[i] as List).cast<int>()) {
+      nodes[i].neighbors.add(nodes[j - 1]);
+    }
+  }
+  return nodes[0];
+}
+
+List<List<int>> _graphToAdj(Node? node) {
+  if (node == null) return [];
+  var seen = <int, Node>{};
+  var stack = [node];
+  while (stack.isNotEmpty) {
+    var n = stack.removeLast();
+    if (seen.containsKey(n.val)) continue;
+    seen[n.val] = n;
+    stack.addAll(n.neighbors);
+  }
+  return [
+    for (var i = 1; i <= seen.length; i++)
+      (seen[i]!.neighbors.map((nb) => nb.val).toList()..sort()),
+  ];
+}
+
+dynamic _convert(dynamic v, String t) {
+  if (t == 'graph') return _adjToGraph(v);
+  if (t == 'cycle') return _listToCycle(v);
+  if (t == 'tree') return _listToTree(v);
+  if (t == 'linked') return _listToNode(v);
+  if (t == 'linked[]') return _listToNodeArray(v);
+  if (t == 'randomLinked') return _listToRandom(v);
+  return v;
+}
+
+dynamic _toPlain(dynamic x) {
+  if (x is Node) return _graphToAdj(x);
+  if (x is TreeNode) return _treeToList(x);
+  if (x is RandomListNode) return _randomToList(x);
+  if (x is ListNode) return _nodeToList(x);
+  return x;
+}
+
+`;
+
+const DART_MAIN_START = `void main() {
+`;
+
+const DART_MAIN_END = `
+}
+`;
+
+function dartLiteral(v: unknown, t: InputType): string {
+  switch (t) {
+    case "int":
+      return String(Math.trunc(Number(v)));
+    case "double": {
+      const n = Number(v);
+      return Number.isInteger(n) ? `${n}.0` : String(n);
+    }
+    case "bool":
+      return v ? "true" : "false";
+    case "string":
+      return `'${String(v).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+    case "int[]":
+      return `<int>[${(v as unknown[]).map((x) => String(Math.trunc(Number(x)))).join(", ")}]`;
+    case "int[][]":
+      return `<List<int>>[${(v as unknown[][]).map((row) => `<int>[${row.map((x) => String(Math.trunc(Number(x)))).join(", ")}]`).join(", ")}]`;
+    case "double[]":
+      return `<double>[${(v as unknown[]).map((x) => { const n = Number(x); return Number.isInteger(n) ? `${n}.0` : String(n); }).join(", ")}]`;
+    case "string[]":
+      return `<String>[${(v as unknown[]).map((x) => `'${String(x).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`).join(", ")}]`;
+    case "string[][]":
+      return `<List<String>>[${(v as unknown[][]).map((row) => `<String>[${row.map((x) => `'${String(x).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`).join(", ")}]`).join(", ")}]`;
+    case "bool[]":
+      return `<bool>[${(v as unknown[]).map((x) => (x ? "true" : "false")).join(", ")}]`;
+    case "char[]":
+      return `<String>[${(v as unknown[]).map((x) => `'${String(x).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`).join(", ")}]`;
+    case "char[][]":
+      return `<List<String>>[${(v as unknown[][]).map((row) => `<String>[${row.map((x) => `'${String(x).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`).join(", ")}]`).join(", ")}]`;
+    case "tree":
+      return `N('${(v as unknown[]).map((x) => (x === null ? "null" : String(x))).join(",")}')`;
+    case "linked":
+      return `L(<int>[${(v as unknown[]).map((x) => String(Math.trunc(Number(x)))).join(", ")}])`;
+    case "linked[]":
+      return `LA(<List<int>>[${(v as unknown[][]).map((arr) => `<int>[${arr.map((x) => String(Math.trunc(Number(x)))).join(", ")}]`).join(", ")}])`;
+    case "randomLinked": {
+      const pairs = v as [unknown, unknown][];
+      const vals = pairs.map((p) => String(Math.trunc(Number(p[0])))).join(", ");
+      const rands = pairs.map((p) => (p[1] === null ? "null" : String(Math.trunc(Number(p[1]))))).join(", ");
+      return `R(<int>[$vals], [${rands}])`;
+    }
+    case "cycle": {
+      const [values, pos] = v as [unknown[], number];
+      return `C(<int>[${values.map((x) => String(Math.trunc(Number(x)))).join(", ")}], ${pos})`;
+    }
+    case "graph":
+      return `G(<List<int>>[${(v as unknown[][]).map((row) => `<int>[${row.map((x) => String(Math.trunc(Number(x)))).join(", ")}]`).join(", ")}]`;
+    default:
+      return jsLiteral(v);
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Literal codegen for Java and C++                                    */
 /* ------------------------------------------------------------------ */
 
@@ -1315,6 +1553,39 @@ export function buildSubmission(
         limits: { memoryKb: 524288, cpuSec: 8 },
       };
     }
+    case "dart": {
+      // Repair clang-format damage: it mangles Dart's => into "= >"
+      userCode = userCode.replace(/= >/g, "=>");
+      const isVoid = outputType === "void";
+      const lines: string[] = [];
+      lines.push("  var s = Solution();");
+      cases.forEach((c, idx) => {
+        const decls = c.args.map((a, i) => dartLiteral(a, argTypes[i] ?? "int"));
+        lines.push("  try {");
+        c.args.forEach((_, i) => {
+          lines.push(`    var v${idx}_${i} = ${decls[i]};`);
+        });
+        const callArgs = c.args.map((_, i) => `v${idx}_${i}`).join(", ");
+        if (isVoid) {
+          lines.push(`    s.${methodName}(${callArgs});`);
+          lines.push(`    var r = v${idx}_0;`);
+        } else {
+          lines.push(`    var r = s.${methodName}(${callArgs});`);
+        }
+        lines.push(`    print('@@RESULT {\\"i\\":${idx},\\"out\\":\${jsonEncode(_toPlain(r))}}');`);
+        lines.push("  } catch (e) {");
+        lines.push(`    print('@@ERROR {\\"i\\":${idx},\\"msg\\":\${jsonEncode(e.toString())}}');`);
+        lines.push("  }");
+      });
+      const mainBody = lines.join("\n") + "\n";
+      return {
+        files: [
+          { name: "main.dart", content: DART_PRELUDE + userCode + "\n" + DART_MAIN_START + mainBody + DART_MAIN_END },
+        ],
+        run: ["dart", "run", "main.dart"],
+        limits: { memoryKb: 524288, cpuSec: 8 },
+      };
+    }
   }
 }
 
@@ -1426,6 +1697,40 @@ function buildClassSubmission(
         ],
         compile: ["g++", "-std=c++17", "-O2", "-o", "main", "main.cpp"],
         run: ["./main"],
+        limits: { memoryKb: 524288, cpuSec: 8 },
+      };
+    }
+    case "dart": {
+      const lines: string[] = [];
+      cases.forEach((c, idx) => {
+        const v = `v${idx}`;
+        const ctorLits = (c.args[0] ?? []).map((a, i) => dartLiteral(a, ops[0].argTypes[i] ?? "int"));
+        lines.push("  try {");
+        lines.push(`    var ${v} = ${spec.className}(${ctorLits.join(", ")});`);
+        lines.push("    var outs = <dynamic>[null];");
+        c.ops.slice(1).forEach((op, j) => {
+          const opIdx = j + 1;
+          const opSpec =
+            ops.find((o) => o.name === op) ?? { name: op, argTypes: [] as InputType[], ret: "value" as const };
+          const lits = (c.args[opIdx] ?? []).map((a, k) => dartLiteral(a, opSpec.argTypes[k] ?? "int"));
+          if (opSpec.ret === "void") {
+            lines.push(`    ${v}.${op}(${lits.join(", ")});`);
+            lines.push("    outs.add(null);");
+          } else {
+            lines.push(`    outs.add(_toPlain(${v}.${op}(${lits.join(", ")})));`);
+          }
+        });
+        lines.push(`    print('@@RESULT {\\"i\\":${idx},\\"out\\":\${jsonEncode(outs)}}');`);
+        lines.push("  } catch (e) {");
+        lines.push(`    print('@@ERROR {\\"i\\":${idx},\\"msg\\":\${jsonEncode(e.toString())}}');`);
+        lines.push("  }");
+      });
+      const mainBody = lines.join("\n") + "\n";
+      return {
+        files: [
+          { name: "main.dart", content: DART_PRELUDE + userCode + "\n" + DART_MAIN_START + mainBody + DART_MAIN_END },
+        ],
+        run: ["dart", "run", "main.dart"],
         limits: { memoryKb: 524288, cpuSec: 8 },
       };
     }

@@ -21,6 +21,11 @@ export const oneDDpExtra: Problem[] = [
       typescript: `function minCostClimbingStairs(cost: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minCostClimbingStairs(vector<int>& cost) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int minCostClimbingStairs(List<int> cost) {
+    
+  }
+}`,
     },
     methodName: "minCostClimbingStairs",
     argTypes: ["int[]"],
@@ -113,6 +118,11 @@ public:
       typescript: `function rob(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int rob(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int rob(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int rob(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "rob",
     argTypes: ["int[]"],
@@ -229,6 +239,11 @@ public:
       typescript: `function longestPalindrome(s: string): string {\n    \n}`,
       java: `class Solution {\n    public String longestPalindrome(String s) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    string longestPalindrome(string s) {\n        \n    }\n};`,
+      dart: `class Solution {
+  String longestPalindrome(String s) {
+    
+  }
+}`,
     },
     methodName: "longestPalindrome",
     argTypes: ["string"],
@@ -368,6 +383,11 @@ public:
       typescript: `function countSubstrings(s: string): number {\n    \n}`,
       java: `class Solution {\n    public int countSubstrings(String s) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int countSubstrings(string s) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int countSubstrings(String s) {
+    
+  }
+}`,
     },
     methodName: "countSubstrings",
     argTypes: ["string"],
@@ -496,6 +516,11 @@ public:
       typescript: `function numDecodings(s: string): number {\n    \n}`,
       java: `class Solution {\n    public int numDecodings(String s) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numDecodings(string s) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int numDecodings(String s) {
+    
+  }
+}`,
     },
     methodName: "numDecodings",
     argTypes: ["string"],
@@ -608,6 +633,11 @@ public:
       typescript: `function maxProduct(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int maxProduct(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxProduct(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int maxProduct(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "maxProduct",
     argTypes: ["int[]"],
@@ -706,6 +736,11 @@ public:
       typescript: `function canPartition(nums: number[]): boolean {\n    \n}`,
       java: `class Solution {\n    public boolean canPartition(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canPartition(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  bool canPartition(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "canPartition",
     argTypes: ["int[]"],

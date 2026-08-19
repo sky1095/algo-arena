@@ -21,6 +21,11 @@ export const bitManipulationExtra: Problem[] = [
       typescript: `function reverseBits(n: number): number {\n    \n}`,
       java: `public class Solution {\n    // you need treat n as an unsigned value\n    public int reverseBits(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    uint32_t reverseBits(uint32_t n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int reverseBits(int n) {
+    
+  }
+}`,
     },
     methodName: "reverseBits",
     argTypes: ["int"],
@@ -106,6 +111,11 @@ public:
       typescript: `function missingNumber(nums: number[]): number {\n    \n}`,
       java: `class Solution {\n    public int missingNumber(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int missingNumber(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int missingNumber(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "missingNumber",
     argTypes: ["int[]"],
@@ -184,6 +194,11 @@ public:
       typescript: `function getSum(a: number, b: number): number {\n    \n}`,
       java: `class Solution {\n    public int getSum(int a, int b) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int getSum(int a, int b) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int getSum(int a, int b) {
+    
+  }
+}`,
     },
     methodName: "getSum",
     argTypes: ["int", "int"],
@@ -273,6 +288,11 @@ public:
       typescript: `function reverse(x: number): number {\n    \n}`,
       java: `class Solution {\n    public int reverse(int x) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int reverse(int x) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int reverse(int x) {
+    
+  }
+}`,
     },
     methodName: "reverse",
     argTypes: ["int"],

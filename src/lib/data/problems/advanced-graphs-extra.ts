@@ -42,6 +42,11 @@ export const advancedGraphsExtra: Problem[] = [
       typescript: `function findItinerary(tickets: string[][]): string[] {\n    \n}`,
       java: `class Solution {\n    public String[] findItinerary(String[][] tickets) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<string> findItinerary(vector<vector<string>>& tickets) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<String> findItinerary(List<String>[] tickets) {
+    
+  }
+}`,
     },
     methodName: "findItinerary",
     argTypes: ["string[][]"],
@@ -229,6 +234,11 @@ public:
       typescript: `function minCostConnectPoints(points: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int minCostConnectPoints(int[][] points) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minCostConnectPoints(vector<vector<int>>& points) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int minCostConnectPoints(List<List<int>> points) {
+    
+  }
+}`,
     },
     methodName: "minCostConnectPoints",
     argTypes: ["int[][]"],
@@ -384,6 +394,11 @@ public:
       typescript: `function networkDelayTime(times: number[][], n: number, k: number): number {\n    \n}`,
       java: `class Solution {\n    public int networkDelayTime(int[][] times, int n, int k) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int networkDelayTime(vector<vector<int>>& times, int n, int k) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int networkDelayTime(List<List<int>> times, int n, int k) {
+    
+  }
+}`,
     },
     methodName: "networkDelayTime",
     argTypes: ["int[][]", "int", "int"],
@@ -552,6 +567,11 @@ public:
       typescript: `function swimInWater(grid: number[][]): number {\n    \n}`,
       java: `class Solution {\n    public int swimInWater(int[][] grid) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int swimInWater(vector<vector<int>>& grid) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int swimInWater(List<List<int>> grid) {
+    
+  }
+}`,
     },
     methodName: "swimInWater",
     argTypes: ["int[][]"],
@@ -697,6 +717,11 @@ public:
       typescript: `function alienOrder(words: string[]): string {\n    \n}`,
       java: `class Solution {\n    public String alienOrder(String[] words) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    string alienOrder(vector<string>& words) {\n        \n    }\n};`,
+      dart: `class Solution {
+  String alienOrder(List<String> words) {
+    
+  }
+}`,
     },
     methodName: "alienOrder",
     argTypes: ["string[]"],
@@ -911,6 +936,11 @@ public:
       typescript: `function findCheapestPrice(n: number, flights: number[][], src: number, dst: number, k: number): number {\n    \n}`,
       java: `class Solution {\n    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int findCheapestPrice(int n, List<List<int>> flights, int src, int dst, int k) {
+    
+  }
+}`,
     },
     methodName: "findCheapestPrice",
     argTypes: ["int", "int[][]", "int", "int", "int"],

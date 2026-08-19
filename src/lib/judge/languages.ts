@@ -51,6 +51,14 @@ export const LANGUAGES: Record<LanguageId, LanguageMeta> = {
     defaultTemplate: (method, args) =>
       `class Solution {\npublic:\n    ${method}(${toArgs(args)}) {\n        \n    }\n};\n`,
   },
+  dart: {
+    id: "dart",
+    label: "Dart",
+    monaco: "dart",
+    extension: "dart",
+    defaultTemplate: (method, args) =>
+      `class Solution {\n  ${method}(${toArgs(args)}) {\n    \n  }\n}\n`,
+  },
 };
 
 export const LANGUAGE_LIST: LanguageMeta[] = Object.values(LANGUAGES);

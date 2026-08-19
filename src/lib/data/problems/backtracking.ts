@@ -22,6 +22,11 @@ The solution set must not contain duplicate subsets. Return the solution in any 
       typescript: `function subsets(nums: number[]): number[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<Integer>> subsets(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> subsets(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> subsets(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "subsets",
     argTypes: ["int[]"],
@@ -145,6 +150,11 @@ The **same** number may be chosen from \`candidates\` an **unlimited number of t
       typescript: `function combinationSum(candidates: number[], target: number): number[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<Integer>> combinationSum(int[] candidates, int target) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> combinationSum(List<int> candidates, int target) {
+    
+  }
+}`,
     },
     methodName: "combinationSum",
     argTypes: ["int[]", "int"],
@@ -285,6 +295,11 @@ public:
       typescript: `function permute(nums: number[]): number[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<Integer>> permute(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> permute(vector<int>& nums) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<int>> permute(List<int> nums) {
+    
+  }
+}`,
     },
     methodName: "permute",
     argTypes: ["int[]"],
@@ -424,6 +439,11 @@ Each solution contains a distinct board configuration of the n-queens' placement
       typescript: `function solveNQueens(n: number): string[][] {\n    \n}`,
       java: `class Solution {\n    public List<List<String>> solveNQueens(int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<string>> solveNQueens(int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  List<List<String>> solveNQueens(int n) {
+    
+  }
+}`,
     },
     methodName: "solveNQueens",
     argTypes: ["int"],

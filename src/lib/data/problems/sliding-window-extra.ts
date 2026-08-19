@@ -35,6 +35,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  bool checkInclusion(String s1, String s2) {
+    
+  }
+}`,
     },
     methodName: "checkInclusion",
     argTypes: ["string", "string"],
@@ -182,6 +187,11 @@ public:
         
     }
 };`,
+      dart: `class Solution {
+  List<int> maxSlidingWindow(List<int> nums, int k) {
+    
+  }
+}`,
     },
     methodName: "maxSlidingWindow",
     argTypes: ["int[]", "int"],

@@ -20,6 +20,11 @@ export const heapExtra: Problem[] = [
       typescript: `function findKthLargest(nums: number[], k: number): number {\n    \n}`,
       java: `class Solution {\n    public int findKthLargest(int[] nums, int k) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findKthLargest(vector<int>& nums, int k) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int findKthLargest(List<int> nums, int k) {
+    
+  }
+}`,
     },
     methodName: "findKthLargest",
     argTypes: ["int[]", "int"],
@@ -169,6 +174,11 @@ public:
       typescript: `function leastInterval(tasks: string[], n: number): number {\n    \n}`,
       java: `class Solution {\n    public int leastInterval(char[] tasks, int n) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    int leastInterval(vector<char>& tasks, int n) {\n        \n    }\n};`,
+      dart: `class Solution {
+  int leastInterval(List<String> tasks, int n) {
+    
+  }
+}`,
     },
     methodName: "leastInterval",
     argTypes: ["char[]", "int"],
@@ -258,6 +268,11 @@ public:
       typescript: `class Twitter {\n    constructor() {\n        \n    }\n    \n    postTweet(userId: number, tweetId: number): void {\n        \n    }\n    \n    getNewsFeed(userId: number): number[] {\n        \n    }\n    \n    follow(followerId: number, followeeId: number): void {\n        \n    }\n    \n    unfollow(followerId: number, followeeId: number): void {\n        \n    }\n}`,
       java: `class Twitter {\n    public Twitter() {\n        \n    }\n    \n    public void postTweet(int userId, int tweetId) {\n        \n    }\n    \n    public List<Integer> getNewsFeed(int userId) {\n        \n    }\n    \n    public void follow(int followerId, int followeeId) {\n        \n    }\n    \n    public void unfollow(int followerId, int followeeId) {\n        \n    }\n}`,
       cpp: `class Twitter {\npublic:\n    Twitter() {\n        \n    }\n    \n    void postTweet(int userId, int tweetId) {\n        \n    }\n    \n    vector<int> getNewsFeed(int userId) {\n        \n    }\n    \n    void follow(int followerId, int followeeId) {\n        \n    }\n    \n    void unfollow(int followerId, int followeeId) {\n        \n    }\n};`,
+      dart: `class Solution {
+  void postTweet(int userId, int tweetId) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],
@@ -500,6 +515,11 @@ public:
       typescript: `class MedianFinder {\n    constructor() {\n        \n    }\n    \n    addNum(num: number): void {\n        \n    }\n    \n    findMedian(): number {\n        \n    }\n}`,
       java: `class MedianFinder {\n    public MedianFinder() {\n        \n    }\n    \n    public void addNum(int num) {\n        \n    }\n    \n    public double findMedian() {\n        \n    }\n}`,
       cpp: `class MedianFinder {\npublic:\n    MedianFinder() {\n        \n    }\n    \n    void addNum(int num) {\n        \n    }\n    \n    double findMedian() {\n        \n    }\n};`,
+      dart: `class Solution {
+  void addNum(int num) {
+    
+  }
+}`,
     },
     methodName: "",
     argTypes: [],

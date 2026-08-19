@@ -4,6 +4,7 @@
  * the Node version is supported. Pure diagnostics — never crashes the server.
  */
 export async function register() {
+  if (process.env.NEXT_RUNTIME !== "nodejs") return;
   // Skip during `next build` — the banner is for server startup, not build logs.
   if (process.env.NEXT_PHASE === "phase-production-build") return;
 

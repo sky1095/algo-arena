@@ -198,15 +198,15 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight transition-opacity hover:opacity-90">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs">
             <Code2 className="h-4 w-4" />
           </span>
-          <span className="hidden sm:inline">Algo Arena</span>
+          <span className="hidden sm:inline font-semibold">Algo Arena</span>
         </Link>
 
-        <nav className="ml-4 flex items-center gap-1">
+        <nav className="ml-1 sm:ml-4 flex items-center gap-0.5 sm:gap-1">
           {NAV_LINKS.map((link) => {
             const active =
               link.href === "/problems"
@@ -219,7 +219,10 @@ export function Navbar() {
                 className={buttonVariants({
                   variant: "ghost",
                   size: "sm",
-                  className: cn(active && "bg-accent text-accent-foreground"),
+                  className: cn(
+                    "px-2 sm:px-3 text-xs sm:text-sm font-medium transition-colors",
+                    active && "bg-accent text-accent-foreground font-semibold"
+                  ),
                 })}
               >
                 {link.label}
@@ -228,9 +231,9 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
           {streak > 0 && (
-            <span className="hidden items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium text-orange-500 sm:flex">
+            <span className="hidden items-center gap-1 rounded-full border border-orange-500/20 bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-500 md:flex">
               <Flame className="h-3.5 w-3.5" />
               {streak} day{streak === 1 ? "" : "s"}
             </span>

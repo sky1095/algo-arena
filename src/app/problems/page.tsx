@@ -7,6 +7,7 @@ import { ALL_PROBLEMS } from "@/lib/data/problems";
 import { CATEGORIES } from "@/lib/data/categories";
 import { useProgress } from "@/lib/progress";
 import { difficultyColor } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -50,39 +51,39 @@ export default function ProblemsPage() {
   }, [query, difficulty, category, status, statusOf]);
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Problems</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Problems</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           {ALL_PROBLEMS.length} problems across {CATEGORIES.length} curated categories.
         </p>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+      <div className="mt-6 flex flex-col gap-2.5 md:flex-row md:items-center">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            className="pl-9"
-            placeholder="Search problems…"
+            className="pl-9 h-9"
+            placeholder="Search problems by name or keyword…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:items-center gap-2">
           <Select value={difficulty} onValueChange={(v) => setDifficulty((v ?? "All") as DifficultyFilter)}>
-            <SelectTrigger className="w-full sm:w-32">
-              <SelectValue />
+            <SelectTrigger className="h-9 w-full md:w-32">
+              <SelectValue placeholder="Difficulty" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">Difficulty</SelectItem>
+              <SelectItem value="All">All difficulties</SelectItem>
               <SelectItem value="Easy">Easy</SelectItem>
               <SelectItem value="Medium">Medium</SelectItem>
               <SelectItem value="Hard">Hard</SelectItem>
             </SelectContent>
           </Select>
           <Select value={category} onValueChange={(v) => setCategory(v ?? "All")}>
-            <SelectTrigger className="w-full sm:w-44">
-              <SelectValue />
+            <SelectTrigger className="h-9 w-full md:w-44">
+              <SelectValue placeholder="Topic" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All topics</SelectItem>
@@ -94,11 +95,11 @@ export default function ProblemsPage() {
             </SelectContent>
           </Select>
           <Select value={status} onValueChange={(v) => setStatus((v ?? "All") as StatusFilter)}>
-            <SelectTrigger className="w-full sm:w-32">
-              <SelectValue />
+            <SelectTrigger className="h-9 w-full col-span-2 sm:col-span-1 md:w-32">
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">Status</SelectItem>
+              <SelectItem value="All">All status</SelectItem>
               <SelectItem value="Solved">Solved</SelectItem>
               <SelectItem value="Attempted">Attempted</SelectItem>
             </SelectContent>
@@ -106,16 +107,16 @@ export default function ProblemsPage() {
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-xl border bg-card">
-        <div className="grid grid-cols-[2rem_1fr_auto] items-center gap-3 border-b px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid-cols-[2rem_1fr_8rem_10rem]">
-          <span />
+      <div className="mt-6 overflow-hidden rounded-xl border bg-card shadow-xs">
+        <div className="grid grid-cols-[2rem_1fr] items-center gap-3 border-b bg-muted/30 px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground sm:grid-cols-[2.5rem_1fr_7rem_10rem]">
+          <span className="text-center">#</span>
           <span>Title</span>
           <span className="hidden sm:block">Difficulty</span>
           <span className="hidden sm:block">Category</span>
         </div>
         {filtered.length === 0 ? (
-          <div className="px-4 py-12 text-center text-sm text-muted-foreground">
-            No problems match your filters.
+          <div className="px-4 py-16 text-center text-sm text-muted-foreground">
+            No problems match your search filters.
           </div>
         ) : (
           filtered.map((p) => {
@@ -124,13 +125,19 @@ export default function ProblemsPage() {
               <Link
                 key={p.slug}
                 href={`/problems/${p.slug}`}
-                className="grid grid-cols-[2rem_1fr_auto] items-center gap-3 border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-accent/60 sm:grid-cols-[2rem_1fr_8rem_10rem]"
+                className="grid grid-cols-[2rem_1fr] items-center gap-3 border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-accent/60 sm:grid-cols-[2.5rem_1fr_7rem_10rem]"
               >
-                <StatusIcon status={statusOf(p.slug)} />
+                <div className="flex justify-center">
+                  <StatusIcon status={statusOf(p.slug)} />
+                </div>
                 <div className="min-w-0">
-                  <div className="truncate font-medium">{p.title}</div>
-                  <div className="truncate text-xs text-muted-foreground sm:hidden">
-                    {p.difficulty} · {cat?.name}
+                  <div className="truncate font-medium text-sm sm:text-base">{p.title}</div>
+                  <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground sm:hidden">
+                    <Badge variant="secondary" className={cn("px-1.5 py-0 text-[10px]", difficultyColor(p.difficulty))}>
+                      {p.difficulty}
+                    </Badge>
+                    <span>·</span>
+                    <span className="truncate">{cat?.name}</span>
                   </div>
                 </div>
                 <div className="hidden sm:block">
@@ -138,7 +145,7 @@ export default function ProblemsPage() {
                     {p.difficulty}
                   </Badge>
                 </div>
-                <div className="hidden items-center gap-2 text-sm text-muted-foreground sm:flex">
+                <div className="hidden items-center gap-2 text-xs text-muted-foreground sm:flex">
                   <span
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ backgroundColor: cat?.color }}
@@ -151,7 +158,7 @@ export default function ProblemsPage() {
         )}
       </div>
 
-      <p className="mt-4 text-sm text-muted-foreground">
+      <p className="mt-4 text-xs sm:text-sm text-muted-foreground">
         Showing {filtered.length} of {ALL_PROBLEMS.length} problems
       </p>
     </main>

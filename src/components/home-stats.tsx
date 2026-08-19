@@ -13,12 +13,15 @@ export function HomeStats() {
     { label: "Languages", value: 5, sub: "Python · JS · TS · Java · C++" },
   ];
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {stats.map((s) => (
-        <div key={s.label} className="rounded-xl border bg-card p-4">
-          <div className="text-3xl font-bold tabular-nums">{s.value}</div>
-          <div className="mt-1 text-sm font-medium">{s.label}</div>
-          <div className="text-xs text-muted-foreground">{s.sub}</div>
+        <div
+          key={s.label}
+          className="rounded-xl border bg-card p-4 sm:p-5 transition-all hover:border-primary/30 hover:shadow-xs"
+        >
+          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums">{s.value}</div>
+          <div className="mt-1 text-xs sm:text-sm font-medium">{s.label}</div>
+          <div className="text-[11px] sm:text-xs text-muted-foreground">{s.sub}</div>
         </div>
       ))}
     </div>

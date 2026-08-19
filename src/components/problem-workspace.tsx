@@ -38,7 +38,7 @@ import { LANGUAGE_LIST, languageById } from "@/lib/judge/languages";
 import { formatCode } from "@/lib/format-code";
 import { CATEGORIES } from "@/lib/data/categories";
 import { useProgress } from "@/lib/progress";
-import { difficultyColor, difficultyTextColor, formatRuntime, formatValue } from "@/lib/format";
+import { difficultyColor, formatRuntime, formatValue } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type {
   ClassExample,
@@ -213,80 +213,81 @@ export function ProblemWorkspace({ problem }: Props) {
   );
 
   return (
-    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col">
+    <main className="flex min-h-[calc(100dvh-3.5rem)] lg:h-[calc(100vh-3.5rem)] flex-col lg:overflow-hidden bg-background">
       {/* Header */}
-      <div className="border-b bg-card">          <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center gap-2 px-4 py-3">
+      <div className="border-b bg-card">
+        <div className="flex w-full items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 overflow-x-auto text-xs sm:text-sm">
           <Link
             href={problem.isLibrary ? "/library" : "/problems"}
-            className={buttonVariants({ variant: "ghost", size: "sm", className: "-ml-2" })}
+            className={buttonVariants({ variant: "ghost", size: "sm", className: "h-7 px-2 text-xs" })}
           >
-            <ArrowLeft className="h-4 w-4" /> {problem.isLibrary ? "Library" : "Problems"}
+            <ArrowLeft className="h-3.5 w-3.5 mr-1" /> {problem.isLibrary ? "Library" : "Problems"}
           </Link>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           {problem.isLibrary ? (
-            <span className="text-sm text-muted-foreground">Archive</span>
+            <span className="text-xs text-muted-foreground shrink-0">Archive</span>
           ) : (
             <Link
               href={`/roadmap#${problem.category}`}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground shrink-0"
             >
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: category?.color }} />
               {category?.name}
             </Link>
           )}
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <h1 className="font-semibold">{problem.title}</h1>
-          <Badge variant="secondary" className={difficultyColor(problem.difficulty)}>
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <h1 className="font-semibold truncate text-xs sm:text-sm text-foreground max-w-[200px] sm:max-w-[320px] md:max-w-none">{problem.title}</h1>
+          <Badge variant="secondary" className={cn("px-1.5 py-0 text-[10px] sm:text-xs shrink-0", difficultyColor(problem.difficulty))}>
             {problem.difficulty}
           </Badge>
           {status === "solved" && (
-            <Badge variant="outline" className="gap-1 border-green-500/40 text-green-600 dark:text-green-400">
+            <Badge variant="outline" className="gap-1 border-green-500/40 text-green-600 dark:text-green-400 px-1.5 py-0 text-[10px] sm:text-xs shrink-0">
               <CheckCircle2 className="h-3 w-3" /> Solved
             </Badge>
           )}
         </div>
       </div>
 
-      <div className="mx-auto grid w-full flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]">
+      <div className="grid w-full flex-1 min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] xl:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)]">
         {/* Left: description / solutions / submissions */}
-        <div className="flex min-h-0 flex-col border-b lg:border-b-0 lg:border-r">
+        <div className="flex min-h-[380px] lg:min-h-0 flex-col border-b lg:border-b-0 lg:border-r bg-card/20">
           <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
-            <TabsList className="mx-4 mt-3 w-fit">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="solutions">
+            <TabsList className="mx-3 sm:mx-4 mt-2.5 sm:mt-3 w-fit">
+              <TabsTrigger value="description" className="text-xs sm:text-sm">Description</TabsTrigger>
+              <TabsTrigger value="solutions" className="text-xs sm:text-sm">
                 Solutions
                 {solutionsLocked && <LockKeyhole className="ml-1.5 h-3 w-3 text-muted-foreground" />}
               </TabsTrigger>
-              <TabsTrigger value="submissions">
+              <TabsTrigger value="submissions" className="text-xs sm:text-sm">
                 Submissions
                 {mySubmissions.length > 0 && (
-                  <span className="ml-1.5 rounded-full bg-muted px-1.5 text-xs tabular-nums">
+                  <span className="ml-1.5 rounded-full bg-muted px-1.5 text-[10px] tabular-nums">
                     {mySubmissions.length}
                   </span>
                 )}
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="description" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+            <TabsContent value="description" className="min-h-0 flex-1 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4">
               <DescriptionTab problem={problem} />
             </TabsContent>
-            <TabsContent value="solutions" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+            <TabsContent value="solutions" className="min-h-0 flex-1 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4">
               {solutionsLocked ? (
                 <SolutionsLocked onBack={() => setTab("description")} />
               ) : (
                 <SolutionsTab problem={problem} theme={resolvedTheme === "dark" ? "dark" : "light"} />
               )}
             </TabsContent>
-            <TabsContent value="submissions" className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+            <TabsContent value="submissions" className="min-h-0 flex-1 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4">
               <SubmissionsTab submissions={mySubmissions} />
             </TabsContent>
           </Tabs>
         </div>
 
         {/* Right: editor + console */}
-        <div className="flex min-h-0 flex-col">
-          <div className="flex items-center gap-2 border-b bg-card px-4 py-2">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 border-b bg-card px-3 sm:px-4 py-2">
             <Select value={lang} onValueChange={(v) => setLang((v ?? "python") as LanguageId)}>
-              <SelectTrigger className="h-8 w-40">
+              <SelectTrigger className="h-8 w-32 sm:w-36 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -297,14 +298,14 @@ export function ProblemWorkspace({ problem }: Props) {
                 ))}
               </SelectContent>
             </Select>
-            <Button variant="ghost" size="sm" className="ml-auto h-8" onClick={resetCode}>
+            <Button variant="ghost" size="sm" className="ml-auto h-8 px-2 sm:px-3 text-xs" onClick={resetCode}>
               Reset
             </Button>
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="h-8"
+              className="h-8 px-2 sm:px-3 text-xs"
               disabled={formatting || running !== null}
               onClick={(e) => {
                 e.currentTarget.blur();
@@ -317,13 +318,13 @@ export function ProblemWorkspace({ problem }: Props) {
               ) : (
                 <WandSparkles className="h-3.5 w-3.5" />
               )}
-              Format
+              <span className="hidden sm:inline">Format</span>
             </Button>
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="h-8"
+              className="h-8 px-2.5 sm:px-3 text-xs shadow-xs"
               disabled={running !== null}
               onClick={(e) => {
                 e.currentTarget.blur();
@@ -336,12 +337,12 @@ export function ProblemWorkspace({ problem }: Props) {
               ) : (
                 <Play className="h-3.5 w-3.5" />
               )}
-              Run
+              <span>Run</span>
             </Button>
             <Button
               type="button"
               size="sm"
-              className="h-8"
+              className="h-8 px-2.5 sm:px-3 text-xs shadow-xs"
               disabled={running !== null}
               onClick={(e) => {
                 e.currentTarget.blur();
@@ -353,18 +354,18 @@ export function ProblemWorkspace({ problem }: Props) {
               ) : (
                 <Send className="h-3.5 w-3.5" />
               )}
-              Submit
+              <span>Submit</span>
             </Button>
             {!consoleOpen && (
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-1.5"
+                className="h-8 px-2 sm:px-3 text-xs gap-1.5"
                 onClick={() => setConsoleOpen(true)}
               >
                 <TerminalSquare className="h-3.5 w-3.5" />
-                Console
+                <span className="hidden sm:inline">Console</span>
                 {(running || outcome || apiError) && (
                   <span className={`h-1.5 w-1.5 rounded-full ${outcome?.status === "Accepted" ? "bg-green-500" : outcome ? "bg-red-500" : running ? "bg-amber-500" : "bg-transparent"}`} />
                 )}
@@ -372,8 +373,8 @@ export function ProblemWorkspace({ problem }: Props) {
             )}
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-            <div className="min-h-[320px] min-w-0 flex-1">
+          <div className="flex min-h-0 flex-1 flex-col xl:flex-row">
+            <div className="min-h-[320px] min-w-0 flex-1 flex flex-col">
               <Editor
                 height="100%"
                 language={languageById(lang)?.monaco}
@@ -381,7 +382,7 @@ export function ProblemWorkspace({ problem }: Props) {
                 onChange={setCode}
                 onMount={(editor, monaco) => {
                   editorRef.current = editor;
-                  // Run: Ctrl/Cmd+; · Format: Shift+Cmd/Ctrl+F (dynamic bindings win over Monaco defaults).
+                  // Run: Ctrl/Cmd+Enter · Format: Shift+Cmd/Ctrl+F (dynamic bindings win over Monaco defaults).
                   editor.addAction({
                     id: "run-code",
                     label: "Run Code",
@@ -432,7 +433,7 @@ export function ProblemWorkspace({ problem }: Props) {
           {!consoleOpen && (running || outcome || apiError) && (
             <button
               onClick={() => setConsoleOpen(true)}
-              className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border bg-card px-3 py-2 text-sm shadow-lg hover:bg-accent lg:hidden"
+              className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border bg-card px-3 py-2 text-xs sm:text-sm shadow-lg hover:bg-accent xl:hidden"
             >
               <TerminalSquare className="h-4 w-4" />
               Console
@@ -697,9 +698,9 @@ function ConsolePanel({
   onClose: () => void;
 }) {
   return (
-    <div className="flex h-[300px] min-h-0 flex-col border-t bg-card lg:h-full lg:w-[380px] lg:min-w-[300px] lg:border-l lg:border-t-0">
-      <div className="flex items-center gap-2 border-b px-4 py-2">
-        <span className="text-sm font-medium">Console</span>
+    <div className="flex h-[240px] sm:h-[280px] min-h-0 flex-col border-t bg-card xl:h-full xl:w-[340px] 2xl:w-[380px] xl:min-w-[300px] xl:border-l xl:border-t-0 shadow-xs">
+      <div className="flex items-center gap-2 border-b bg-muted/20 px-3.5 sm:px-4 py-2">
+        <span className="text-xs sm:text-sm font-semibold">Console</span>
         {running && (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Loader2 className="h-3 w-3 animate-spin" />
@@ -707,7 +708,7 @@ function ConsolePanel({
           </span>
         )}
         {outcome && !running && <OutcomeBadge outcome={outcome} />}
-        <button onClick={onClose} className="ml-auto text-muted-foreground hover:text-foreground" title="Close console">
+        <button onClick={onClose} className="ml-auto text-muted-foreground hover:text-foreground cursor-pointer" title="Close console">
           <X className="h-4 w-4" />
         </button>
       </div>

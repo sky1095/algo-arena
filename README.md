@@ -25,7 +25,8 @@ A focused, self-hosted practice platform with **2,936 algorithm problems**, a gu
 </p>
 
 <p align="center">
-  <img src="public/readme/algo-arena-hero.png" alt="Algo Arena — algorithms, code, and progress visualized" width="100%">
+  <img src="public/screenshots/workspace.png?v=2" alt="Actual Algo Arena workspace showing the Two Sum problem and code editor" width="100%">
+  <br><sub>The actual Algo Arena workspace: problem description, editor, and test console.</sub>
 </p>
 
 Algo Arena brings the complete interview-practice loop into one focused workspace: choose a pattern, solve a problem in a VS Code-grade editor, run real test cases, study the explanation, and watch your progress compound.
@@ -91,8 +92,7 @@ Missing runtimes do not prevent Algo Arena from starting. Only submissions in th
 </table>
 
 <p align="center">
-  <img src="public/screenshots/home.png?v=2" alt="Algo Arena dashboard" width="49%">
-  <img src="public/screenshots/workspace.png?v=2" alt="Algo Arena coding workspace" width="49%">
+  <img src="public/screenshots/home.png?v=2" alt="Algo Arena dashboard" width="100%">
 </p>
 
 ## What you get

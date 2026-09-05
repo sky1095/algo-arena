@@ -1,9 +1,12 @@
+<div align="center">
+
 # Algo Arena
 
-<p align="center">
-  <strong>Ace the coding interview, one problem at a time.</strong><br>
-  A self-hosted practice platform with 2,936 algorithm problems, a guided roadmap, and a real six-language code judge.
-</p>
+### Ace the coding interview, one problem at a time.
+
+A focused, self-hosted practice platform with **2,936 algorithm problems**, a guided roadmap, and a real six-language code judge.
+
+</div>
 
 <p align="center">
   <a href="#quick-start"><strong>Quick start</strong></a> ·
@@ -21,11 +24,15 @@
   <img alt="Installable PWA" src="https://img.shields.io/badge/PWA-installable-5a0fc8?logo=pwa&logoColor=white">
 </p>
 
-![Algo Arena home page](public/screenshots/home.png?v=2)
+<p align="center">
+  <img src="public/readme/algo-arena-hero.png" alt="Algo Arena — algorithms, code, and progress visualized" width="100%">
+</p>
 
 Algo Arena brings the complete interview-practice loop into one focused workspace: choose a pattern, solve a problem in a VS Code-grade editor, run real test cases, study the explanation, and watch your progress compound.
 
 It is free, open, and designed to run on infrastructure you control. Practice without an account, keep progress locally, or sign in to sync progress on your own instance.
+
+> **No account. No paywall. No external judge.** Your code runs on your machine or your own server.
 
 ## Why Algo Arena
 
@@ -72,6 +79,22 @@ npm run setup:runtimes  # install missing host runtimes
 
 Missing runtimes do not prevent Algo Arena from starting. Only submissions in the missing language will fail with a clear compiler/runtime message.
 
+## The complete practice loop
+
+<table>
+  <tr>
+    <td width="25%" align="center"><strong>1 · Pick</strong><br><sub>Follow the roadmap or search the library.</sub></td>
+    <td width="25%" align="center"><strong>2 · Solve</strong><br><sub>Code in a focused Monaco workspace.</sub></td>
+    <td width="25%" align="center"><strong>3 · Verify</strong><br><sub>Run visible tests, then submit hidden ones.</sub></td>
+    <td width="25%" align="center"><strong>4 · Learn</strong><br><sub>Study the editorial and track mastery.</sub></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="public/screenshots/home.png?v=2" alt="Algo Arena dashboard" width="49%">
+  <img src="public/screenshots/workspace.png?v=2" alt="Algo Arena coding workspace" width="49%">
+</p>
+
 ## What you get
 
 | Experience | What it provides |
@@ -84,8 +107,6 @@ Missing runtimes do not prevent Algo Arena from starting. Only submissions in th
 | **Progress** | Solved/attempted state, submission history, streaks, and category coverage |
 | **Portable backups** | Client-side encrypted progress export and import |
 | **Flexible install** | Browser app, installable PWA, Docker deployment, or Electron desktop build |
-
-![Algo Arena coding workspace](public/screenshots/workspace.png?v=2)
 
 ### Six judge languages
 
@@ -112,13 +133,23 @@ The roadmap turns common interview techniques into a sequence you can work throu
 - Dynamic programming
 - Greedy algorithms, intervals, math, and bit manipulation
 
-![Algo Arena roadmap](public/screenshots/roadmap.png?v=2)
-
 Use the searchable problem list for the core roadmap or jump into the complete archive when you want more repetition.
 
-![Searchable problems](public/screenshots/problems.png?v=2)
+<table>
+  <tr>
+    <td width="50%"><img src="public/screenshots/roadmap.png?v=2" alt="18-category interview roadmap"></td>
+    <td width="50%"><img src="public/screenshots/problems.png?v=2" alt="Searchable curated problem list"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><strong>Roadmap</strong> — master one interview pattern at a time</sub></td>
+    <td align="center"><sub><strong>Problems</strong> — filter by difficulty, category, and progress</sub></td>
+  </tr>
+</table>
 
-![Problem library](public/screenshots/library.png?v=2)
+<p align="center">
+  <img src="public/screenshots/library.png?v=2" alt="Searchable 2,786-problem library" width="100%">
+  <br><sub><strong>Library</strong> — go beyond the roadmap with 2,786 additional problems</sub>
+</p>
 
 ## Progress that belongs to you
 
